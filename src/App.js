@@ -5,12 +5,14 @@ import React, {useEffect, useRef,useState} from "react";
 import "./styles.scss"
 import {Button, IconButton} from "blocksin-system";
 import ReactDOM from "react-dom/client";
-import {ActivityLogIcon, CircleIcon, LightningBoltIcon, SquareIcon, TableIcon, TextIcon} from "sebikostudio-icons";
+import {ActivityLogIcon, ButtonIcon, CircleIcon, DownloadIcon, EnvelopeClosedIcon, LightningBoltIcon, SquareIcon, TableIcon, TextIcon} from "sebikostudio-icons";
 import Settings from "./Settings"
 import CanvasSettings from './CanvasSettings';
 import {handleObjectMoving,ClearGuideLines} from "./snappingHelpers";
 import { v4 as uuidv4 } from "uuid";
 import LayersList from './LayerList';
+import Convertidor from './convertidor';
+import Muestra from './Muestra';
 
 function CanvasApp() {
 
@@ -167,6 +169,7 @@ function CanvasApp() {
       canvas.add(text);
     }
   }
+  
 
   return   (
     <div className="App">
@@ -196,8 +199,13 @@ function CanvasApp() {
         <CanvasSettings canvas={canvas} />
         {/* <CroppingSettings canvas={canvas} refreshKey={refreshKey} /> */}
         <LayersList canvas={canvas} />
+
+        <Convertidor canvas={canvas}></Convertidor>
       </div>
+
     </div>
+  // <Muestra></Muestra>
+    
   ); 
 }
 

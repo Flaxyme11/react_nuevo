@@ -34,6 +34,27 @@ body {
   position: initial !important;
 }
 
+.GenerarCodigo{
+  
+  background-color: var(--background-neutral-container);
+  display: flex;
+  flex-direction: column;
+}
+
+.nombre_desc{
+
+  color: white;
+}
+
+.boton_descarga{
+
+  display: flex ;
+
+  width: 100%;
+  height: 100%;
+  background-color: aqua;
+}
+
 .Toolbar {
   display: flex;
   flex-direction: column;

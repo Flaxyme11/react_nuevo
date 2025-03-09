@@ -101,7 +101,7 @@ const guideLineExists =(canvas,id)=>{
 
 export const createVerticalGuideline=(canvas,x,id)=>{
     return new Line([x,0,x,canvas.height],{
-        id,
+        id:id,
         stroke: "red",
         strokeWidth: 1,
         selectable: false,
@@ -115,7 +115,7 @@ export const createVerticalGuideline=(canvas,x,id)=>{
 
 export const createHorizontalGuideLine=(canvas,y,id)=>{
     return new Line([0,y,canvas.height,y],{
-        id,
+        id:id,
         stroke: "red",
         strokeWidth: 1,
         selectable: false,

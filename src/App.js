@@ -5,10 +5,12 @@ import React, {useEffect, useRef,useState} from "react";
 import "./styles.scss"
 import {Button, IconButton} from "blocksin-system";
 import ReactDOM from "react-dom/client";
-import {CircleIcon, SquareIcon, TableIcon, TextIcon} from "sebikostudio-icons";
+import {ActivityLogIcon, CircleIcon, LightningBoltIcon, SquareIcon, TableIcon, TextIcon} from "sebikostudio-icons";
 import Settings from "./Settings"
 import CanvasSettings from './CanvasSettings';
 import {handleObjectMoving,ClearGuideLines} from "./snappingHelpers";
+import { v4 as uuidv4 } from "uuid";
+import LayersList from './LayerList';
 
 function CanvasApp() {
 
@@ -51,7 +53,9 @@ function CanvasApp() {
         left: 50,
         width: 100,
         height: 60,
-        fill: "#D84D42"
+        fill: "#D84D42",
+        // id:"hola"
+        id: `rect-${uuidv4()}`,
       });
       canvas.add(rect);
     }
@@ -64,7 +68,8 @@ function CanvasApp() {
         left: 150,
         radius:50,
         fill: "#D84D42",
-        objectId: "hola"
+        // objectId: "hola"
+        id: `circle-${uuidv4()}`,
       });
       canvas.add(circle);
     }
@@ -102,6 +107,7 @@ function CanvasApp() {
         top: startY,
         selectable: true,
         hasControls: true,
+        id: `table-${uuidv4()}`,
       });
       
       canvas.add(tableGroup);
@@ -156,6 +162,7 @@ function CanvasApp() {
         fill: '#000000',       // Color del texto
         opacity: 1,            // Opacidad (100)
         lineHeight: 1,         // Espaciado entre líneas
+        id: `text-${uuidv4()}`,
       });
       canvas.add(text);
     }
@@ -177,14 +184,18 @@ function CanvasApp() {
       <IconButton onClick={addText} variant= "ghost" size = "medium">
         <TextIcon />
       </IconButton>
+
+      <IconButton onClick={showlog} variant= "ghost" size = "medium">
+        <ActivityLogIcon />
+      </IconButton>
       </div>
 
       <canvas id="canvas" ref = {canvasRef}></canvas>
       <div className="SettingsWrapper">
         <Settings canvas={canvas} />
         <CanvasSettings canvas={canvas} />
-        {/* <CroppingSettings canvas={canvas} refreshKey={refreshKey} />
-        <LayersList canvas={canvas} /> */}
+        {/* <CroppingSettings canvas={canvas} refreshKey={refreshKey} /> */}
+        <LayersList canvas={canvas} />
       </div>
     </div>
   ); 

@@ -32,6 +32,9 @@ function CanvasApp() {
       
       setCanvas(initCanvas);
 
+
+      initCanvas.on("object:scaling",(event)=> handleObjectScaling(initCanvas,event.target));
+
       initCanvas.on("object:moving", (event)=>
         handleObjectMoving(initCanvas,event.target,guidelines,setGuideLines)  
       );
@@ -40,6 +43,9 @@ function CanvasApp() {
       initCanvas.on("object:modified", (event)=>
         ClearGuideLines(initCanvas,guidelines,setGuideLines)
       );
+
+      initCanvas.on("object:scaled",(event)=> handleObjectScaled(initCanvas,event.target));
+      
 
       return ()=>{
         initCanvas.dispose();
@@ -169,6 +175,156 @@ function CanvasApp() {
       canvas.add(text);
     }
   }
+
+  const handleObjectScaling = (canvas,obj) => {
+    
+    // const obj = event.target;
+    
+    if(canvas){
+      // console.log(obj)
+      // if (obj){
+      //   console.log(obj)
+      //   // if(!canvas)return;
+      
+      //   // Normalizar la escala aplicando scaleX y scaleY a width y height
+      //   obj.set({
+      //     width: obj.width * obj.scaleX,
+      //     height: obj.height * obj.scaleY,
+      //     scaleX: 1, // Reseteamos para evitar distorsiones al exportar
+      //     scaleY: 1,
+      //   });
+      
+      //   canvas.renderAll();
+      // }
+
+      if (obj.type === "circle") {
+        // Adjust radius based on scaleX (Fabric.js circles scale proportionally)
+        obj.set({
+          radius: obj.radius * obj.scaleX, // Apply scaleX to radius
+          scaleX: 1, // Reset scaleX
+          scaleY: 1, // Reset scaleY
+        });
+      } 
+      else if (obj.type === "group") {
+        // const scaleX = obj.scaleX;
+        // const scaleY = obj.scaleY;
+    
+        // // Get the original objects (table cells)
+        // const originalCells = obj.getObjects();
+    
+        // // Ungroup the table
+        // // obj._restoreObjectsState();
+        // canvas.remove(obj);
+    
+        // // Create a new array for scaled cells
+        // let newTableCells = [];
+    
+        // originalCells.forEach((cell) => {
+        //   const scaledCell = new Rect({
+        //     left: cell.left * scaleX,
+        //     top: cell.top * scaleY,
+        //     width: cell.width * scaleX,
+        //     height: cell.height * scaleY,
+        //     fill: cell.fill,
+        //     stroke: cell.stroke,
+        //     strokeWidth: cell.strokeWidth,
+        //   });
+        //   newTableCells.push(scaledCell);
+        // });
+    
+        // // Create a new group with updated scaled objects
+        // const newTableGroup = new Group(newTableCells, {
+        //   left: obj.left,
+        //   top: obj.top,
+        //   selectable: true,
+        //   hasControls: true,
+        //   id: obj.id,
+        // });
+    
+        // // Reset scale to prevent double scaling
+        // newTableGroup.scaleX = 1;
+        // newTableGroup.scaleY = 1;
+    
+        // // Add the new scaled table to the canvas
+        // canvas.add(newTableGroup);
+        // canvas.setActiveObject(newTableGroup);
+
+
+
+        obj.setCoords();
+        canvas.renderAll();
+      }
+      else {
+        // Handle rectangles or other objects
+        obj.set({
+          width: obj.width * obj.scaleX,
+          height: obj.height * obj.scaleY,
+          scaleX: 1,
+          scaleY: 1,
+        });
+      }
+    }
+
+
+  };
+
+
+  const handleObjectScaled = (canvas,event) => {
+    const obj = event.target;
+    if (!obj) return;
+  
+
+    //QUE RE RENDERIZE NO POR GRUPO SINO POR TIPO DE FIGURA
+    if (obj.type === "group") {
+      // Store the final scale values
+      const scaleX = obj.scaleX;
+      const scaleY = obj.scaleY;
+  
+      // Get the original objects (table cells)
+      const originalCells = obj.getObjects();
+  
+      // Ungroup the table
+      obj._restoreObjectsState();
+      canvas.remove(obj);
+  
+      // Create a new array for scaled cells
+      let newTableCells = [];
+  
+      originalCells.forEach((cell) => {
+        const scaledCell = new Rect({
+          left: cell.left * scaleX,
+          top: cell.top * scaleY,
+          width: cell.width * scaleX,
+          height: cell.height * scaleY,
+          fill: cell.fill,
+          stroke: cell.stroke,
+          strokeWidth: cell.strokeWidth,
+        });
+        newTableCells.push(scaledCell);
+      });
+  
+      // Create a new group with updated scaled objects
+      const newTableGroup = new Group(newTableCells, {
+        left: obj.left,
+        top: obj.top,
+        selectable: true,
+        hasControls: true,
+        id: obj.id,
+      });
+  
+      // Reset scale to prevent double scaling
+      newTableGroup.scaleX = 1;
+      newTableGroup.scaleY = 1;
+  
+      // Add the new scaled table to the canvas
+      canvas.add(newTableGroup);
+      canvas.setActiveObject(newTableGroup);
+      
+    }
+  
+    canvas.renderAll();
+  };
+  
   
 
   return   (

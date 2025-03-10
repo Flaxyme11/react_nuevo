@@ -98,12 +98,12 @@ function Convertidor({canvas}){
               position: "absolute",
               top: "${obj.top}px",
               left: "${obj.left}px",
-              width: "${obj.width}px",
-              height: "${obj.height}px",
+              width: "${obj.width*obj.scaleX}px",
+              height: "${obj.height*obj.scaleY}px",
               borderCollapse: "collapse",
               border: "1px solid black",
               backgroundColor: "#f9f9f9",
-              transform: "scale(${obj.scaleX}, ${obj.scaleY})"
+            //   transform: "scale(${obj.scaleX}, ${obj.scaleY})"
             }}
           >
             <tbody>

@@ -56,18 +56,34 @@ body {
 }
 
 .Toolbar {
+  // display: flex;
+  // flex-direction: column;
+  // gap: 8px;
+  // background-color: var(--background-neutral-container);
+  // padding: 8px 8px;
+  // border-radius: 4px;
+  // position: fixed;
+  // top: 50%;
+  // left: 16px;
+  // &:empty {
+  //   display: none;
+  // }
   display: flex;
   flex-direction: column;
   gap: 8px;
   background-color: var(--background-neutral-container);
-  padding: 8px 8px;
+  padding: 8px;
   border-radius: 4px;
+
+  /* Posicionamiento */
   position: fixed;
   top: 50%;
   left: 16px;
-  &:empty {
-    display: none;
-  }
+  transform: translateY(-50%); /* Centrado vertical */
+
+  /* Tamaño máximo y scroll si hay muchos elementos */
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .SettingsWrapper {

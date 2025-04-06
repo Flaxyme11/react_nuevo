@@ -1,11 +1,11 @@
 import logo from './logo.svg';
 // import './App.css';
-import { Canvas, Circle, Rect, Group, IText } from "fabric";
+import { Canvas, Circle, Rect, Group, IText, Triangle } from "fabric";
 import React, {useEffect, useRef,useState} from "react";
 import "./styles.scss"
 import {Button, IconButton} from "blocksin-system";
 import ReactDOM from "react-dom/client";
-import {ActivityLogIcon, ButtonIcon, CircleIcon, DownloadIcon, EnvelopeClosedIcon, LightningBoltIcon, SquareIcon, TableIcon, TextIcon} from "sebikostudio-icons";
+import {ActivityLogIcon, ButtonIcon, CalendarIcon, CheckboxIcon, ChevronDownIcon, CircleIcon, DownloadIcon, EnvelopeClosedIcon, ImageIcon, Input2Icon, LightningBoltIcon, Link2Icon, ReaderIcon, SquareIcon, TableIcon, TextIcon} from "sebikostudio-icons";
 import Settings from "./Settings"
 import CanvasSettings from './CanvasSettings';
 import {handleObjectMoving,ClearGuideLines} from "./snappingHelpers";
@@ -122,6 +122,308 @@ function CanvasApp() {
       canvas.renderAll();
     }
   }
+
+  const addTextBox = () => {
+    if (canvas) {
+      const width = 200;
+      const height = 30;
+      const posX = 100;
+      const posY = 200;
+  
+      const background = new Rect({
+        width,
+        height,
+        fill: '#fff',
+        stroke: '#000',
+        strokeWidth: 1,
+        rx: 4,
+        ry: 4,
+        originX: 'left',
+        originY: 'top'
+      });
+  
+      const text = new IText('Escribe algo...', {
+        width: width - 10,
+        left: 5,
+        top: 5,
+        fontSize: 16,
+        fill: '#333',
+        originX: 'left',
+        originY: 'top',
+        editable: true
+      });
+  
+      const textBoxGroup = new Group([background, text], {
+        left: posX,
+        top: posY,
+        selectable: true,
+        hasControls: true,
+        id: `textbox-${uuidv4()}`
+      });
+  
+      canvas.add(textBoxGroup);
+      canvas.renderAll();
+    }
+  };
+
+  const addComboBox = () => {
+    if (canvas) {
+      const width = 200;
+      const height = 30;
+      const arrowWidth = 30;
+      const posX = 100;
+      const posY = 300;
+  
+      // Fondo del ComboBox
+      const boxRect = new Rect({
+        width,
+        height,
+        fill: '#fff',
+        stroke: '#000',
+        strokeWidth: 1,
+        rx: 4,
+        ry: 4,
+        originX: 'left',
+        originY: 'top'
+      });
+  
+      // Texto seleccionado
+      const selectedText = new IText('Seleccionar...', {
+        left: 10,
+        top: height / 2,
+        fontSize: 16,
+        fill: '#333',
+        originX: 'left',
+        originY: 'center',
+        selectable: false,
+        evented: false
+      });
+  
+      // Botón con la flecha
+      const arrowButton = new Rect({
+        left: width - arrowWidth,
+        top: 0,
+        width: arrowWidth,
+        height: height,
+        fill: '#ddd',
+        stroke: '#000',
+        strokeWidth: 1,
+        originX: 'left',
+        originY: 'top',
+        selectable: false,
+        evented: false
+      });
+  
+      const arrow = new Triangle({
+        left: width - arrowWidth / 2,
+        top: height / 2,
+        width: 10,
+        height: 6,
+        fill: '#000',
+        originX: 'center',
+        originY: 'center',
+        angle: 180,
+        selectable: false,
+        evented: false
+      });
+  
+      const comboBoxGroup = new Group(
+        [boxRect, selectedText, arrowButton, arrow],
+        {
+          left: posX,
+          top: posY,
+          selectable: true,
+          hasControls: true,
+          id: `combobox-${uuidv4()}`,
+          lockScalingFlip: true
+        }
+      );
+  
+      canvas.add(comboBoxGroup);
+      canvas.renderAll();
+    }
+  };
+
+  const addButton = () => {
+    if (canvas) {
+      const width = 120;
+      const height = 40;
+      const posX = 100;
+      const posY = 400;
+  
+      const buttonBackground = new Rect({
+        width,
+        height,
+        fill: '#ADADAD',
+        stroke: '#ffffff',
+        strokeWidth: 2,
+        rx: 6,
+        ry: 6,
+        originX: 'left',
+        originY: 'top'
+      });
+  
+      const buttonText = new IText('Click Me', {
+        fontSize: 18,
+        fill: '#000000',
+        originX: 'center',
+        originY: 'center',
+        left: width / 2,
+        top: height / 2,
+        selectable: false,
+        evented: false
+      });
+  
+      const buttonGroup = new Group([buttonBackground, buttonText], {
+        left: posX,
+        top: posY,
+        selectable: true,
+        hasControls: true,
+        id: `button-${uuidv4()}`
+      });
+  
+      // Evento de clic
+      buttonGroup.on('mousedown', () => {
+        console.log('Botón presionado');
+        // Aquí puedes ejecutar tu lógica personalizada
+      });
+  
+      canvas.add(buttonGroup);
+      canvas.renderAll();
+    }
+  };
+
+  const addDatePicker = () => {
+    if (canvas) {
+      const width = 200;
+      const height = 30;
+      const iconWidth = 30;
+      const posX = 100;
+      const posY = 500;
+  
+      // Contenedor
+      const boxRect = new Rect({
+        width,
+        height,
+        fill: '#fff',
+        stroke: '#000',
+        strokeWidth: 1,
+        rx: 4,
+        ry: 4,
+        originX: 'left',
+        originY: 'top'
+      });
+  
+      // Texto por defecto
+      const dateText = new IText('dd/mm/yyyy', {
+        left: 10,
+        top: height / 2,
+        fontSize: 16,
+        fill: '#333',
+        originX: 'left',
+        originY: 'center',
+        selectable: false,
+        evented: false
+      });
+  
+      // Botón (lado derecho)
+      const iconButton = new Rect({
+        left: width - iconWidth,
+        top: 0,
+        width: iconWidth,
+        height: height,
+        fill: '#ddd',
+        stroke: '#000',
+        strokeWidth: 1,
+        originX: 'left',
+        originY: 'top',
+        selectable: false,
+        evented: false
+      });
+  
+      // Ícono de calendario (simple simulación)
+      const calendarIcon = new IText('📅', {
+        fontSize: 18,
+        left: width - iconWidth / 2,
+        top: height / 2,
+        originX: 'center',
+        originY: 'center',
+        selectable: false,
+        evented: false
+      });
+  
+      const datePickerGroup = new Group(
+        [boxRect, dateText, iconButton, calendarIcon],
+        {
+          left: posX,
+          top: posY,
+          selectable: true,
+          hasControls: true,
+          id: `datepicker-${uuidv4()}`
+        }
+      );
+  
+      // Evento de clic (solo log por ahora)
+      datePickerGroup.on('mousedown', () => {
+        console.log('Abrir datepicker');
+        // Aquí podrías agregar el calendario si se desea expandir
+      });
+  
+      canvas.add(datePickerGroup);
+      canvas.renderAll();
+    }
+  };
+
+  const addPictureBox = () => {
+    if (canvas) {
+      const width = 150;
+      const height = 120;
+      const posX = 100;
+      const posY = 600;
+  
+      // Contorno del PictureBox
+      const frame = new Rect({
+        width,
+        height,
+        fill: '#f8f8f8',
+        stroke: '#bbb',
+        strokeWidth: 2,
+        rx: 6,
+        ry: 6,
+        originX: 'left',
+        originY: 'top'
+      });
+  
+      // Icono de placeholder (puedes usar '🖼️', '📷' o un SVG personalizado)
+      const placeholderIcon = new IText('🖼️', {
+        fontSize: 36,
+        fill: '#aaa',
+        left: width / 2,
+        top: height / 2,
+        originX: 'center',
+        originY: 'center',
+        selectable: false,
+        evented: false
+      });
+  
+      const pictureBoxGroup = new Group([frame, placeholderIcon], {
+        left: posX,
+        top: posY,
+        selectable: true,
+        hasControls: true,
+        id: `picturebox-${uuidv4()}`
+      });
+  
+      // Evento para "subir" imagen (solo log por ahora)
+      pictureBoxGroup.on('mousedown', () => {
+        console.log('Abrir selector de imagen');
+        // Aquí puedes implementar carga de imagen usando <input type="file"> o similar
+      });
+  
+      canvas.add(pictureBoxGroup);
+      canvas.renderAll();
+    }
+  };
 
   const showlog = () =>{
     if(canvas){
@@ -325,7 +627,99 @@ function CanvasApp() {
     canvas.renderAll();
   };
   
+  const addCheckbox = () => {
+    if (canvas) {
+      const size = 20;
+      const labelText = 'Aceptar términos';
+      const posX = 100;
+      const posY = 750;
   
+      // Cuadro del checkbox
+      const box = new Rect({
+        width: size,
+        height: size,
+        fill: '#fff',
+        stroke: '#000',
+        strokeWidth: 1,
+        originX: 'left',
+        originY: 'top'
+      });
+  
+      // Check interno (oculto por defecto)
+      const check = new IText('✔️', {
+        fontSize: 16,
+        left: size / 2,
+        top: size / 2,
+        originX: 'center',
+        originY: 'center',
+        visible: false,
+        selectable: false,
+        evented: false
+      });
+  
+      // Etiqueta al lado del checkbox
+      const label = new IText(labelText, {
+        fontSize: 16,
+        left: size + 10,
+        top: size / 2,
+        originX: 'left',
+        originY: 'center',
+        selectable: false,
+        evented: false
+      });
+  
+      // Agrupamos el checkbox
+      const checkboxGroup = new Group([box, check, label], {
+        left: posX,
+        top: posY,
+        selectable: true,
+        hasControls: false,
+        id: `checkbox-${uuidv4()}`,
+        checked: false
+      });
+  
+      // Manejo de clic: alterna visibilidad del check
+      checkboxGroup.on('mousedown', function () {
+        const isChecked = checkboxGroup.checked;
+        check.set('visible', !isChecked);
+        checkboxGroup.checked = !isChecked;
+        canvas.requestRenderAll();
+        console.log(`Checkbox ${checkboxGroup.checked ? 'marcado' : 'desmarcado'}`);
+      });
+  
+      canvas.add(checkboxGroup);
+      canvas.renderAll();
+    }
+  };
+  
+  const addHyperlink = () => {
+    if (canvas) {
+      const url = 'https://openai.com';
+      const label = 'Enlace';
+      const posX = 100;
+      const posY = 800;
+  
+      const linkText = new IText(label, {
+        left: 100,             // Posición en X
+        top: 100,              // Posición en Y
+        fontSize: 24,          // Tamaño de la fuente (↕A 24)
+        fontFamily: 'Open Sans', // Fuente (Open Sans)
+        fontWeight: 'normal',  // Peso (Bold si activado)
+        fontStyle: 'normal',   // Estilo (Italic si activado)
+        underline: false,      // Subrayado (si activado)
+        charSpacing: 2,        // Espaciado entre caracteres (A̅ 2)
+        textAlign: 'left',     // Alineación de texto (izquierda activada)
+        fill: '#000000',       // Color del texto
+        opacity: 1,            // Opacidad (100)
+        lineHeight: 1,         // Espaciado entre líneas
+        underline: true,    // Subrayado (true o false)
+        id: `hyperlink-${uuidv4()}`
+      });
+  
+      canvas.add(linkText);
+      canvas.renderAll();
+    }
+  };
 
   return   (
     <div className="App">
@@ -339,6 +733,29 @@ function CanvasApp() {
       <IconButton onClick={addTable} variant= "ghost" size = "medium">
         <TableIcon />
       </IconButton>
+      <IconButton onClick={addTextBox} variant= "ghost" size = "medium">
+        <Input2Icon />
+      </IconButton>
+      <IconButton onClick={addButton} variant= "ghost" size = "medium">
+        <ButtonIcon />
+      </IconButton>
+      <IconButton onClick={addComboBox} variant= "ghost" size = "medium">
+        <ChevronDownIcon />
+      </IconButton>
+      <IconButton onClick={addDatePicker} variant= "ghost" size = "medium">
+        <CalendarIcon />
+      </IconButton>
+      <IconButton onClick={addPictureBox} variant= "ghost" size = "medium">
+        <ImageIcon />
+      </IconButton>
+      <IconButton onClick={addCheckbox} variant= "ghost" size = "medium">
+        <CheckboxIcon />
+      </IconButton>
+      <IconButton onClick={addHyperlink} variant= "ghost" size = "medium">
+        <Link2Icon />
+      </IconButton>
+
+
 
       <IconButton onClick={addText} variant= "ghost" size = "medium">
         <TextIcon />

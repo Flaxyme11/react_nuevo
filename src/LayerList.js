@@ -203,16 +203,19 @@ function LayersList({canvas}){
               {selectedLayer?.opacity === 0 ? <EyeClosedIcon /> : <EyeOpenIcon />}
             </IconButton>
           </Flex>
-          <ul>
-            {layers.map((layer) => (
+          <ul style={{ maxHeight: "200px", overflowY: "auto" }}>
+          {layers.map((layer) => {
+            const label = layer.id.split("-")[0]; // toma solo la parte antes del primer "-"
+            return (
               <li
                 key={layer.id}
                 onClick={() => selectLayerInCanvas(layer.id)}
                 className={layer.id === selectedLayer?.id ? "selected-layer" : ""}
               >
-                {layer.type} ({layer.zIndex})
+                {label} ({layer.zIndex})
               </li>
-            ))}
+            );
+          })}
           </ul>
         </div>
     );

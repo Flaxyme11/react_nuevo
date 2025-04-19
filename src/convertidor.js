@@ -9,9 +9,10 @@ import CanvasSettings from './CanvasSettings';
 import {handleObjectMoving,ClearGuideLines} from "./snappingHelpers";
 import { v4 as uuidv4 } from "uuid";
 import LayersList from './LayerList';
+import procesadorTexto from "./procesadorTexto";
 
 function Convertidor({canvas}){
-  const [fileType, setFileType] = useState();
+  const [fileType, setFileType] = useState("jsx");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const generateFile = () => {
@@ -39,31 +40,36 @@ function Convertidor({canvas}){
         // ?.map((obj) => generateTextCode(obj))
         // .join("\n");
 
-        const canvasWidth = canvas.width;
-        const canvasHeight = canvas.height;
 
-        const generatedCode = `
-        <div style={{
-            position: "relative",
-            width: "${canvasWidth}px",
-            height: "${canvasHeight}px",
-            border: "1px solid black",
-            backgroundColor: "white",
-        }}>
-            ${canvas.getObjects()
-                ?.map((obj) => generateTextCode(obj))
-                .join("\n")}
-        </div>
-    `;
+        const generatedCode =  procesadorTexto(canvas,fileType);
 
-        console.log(generatedCode);
+    //     const canvasWidth = canvas.width;
+    //     const canvasHeight = canvas.height;
+
+    //     const generatedCode = `
+    //     <div style={{
+    //         position: "relative",
+    //         width: "${canvasWidth}px",
+    //         height: "${canvasHeight}px",
+    //         border: "1px solid black",
+    //         backgroundColor: "white",
+    //     }}>
+    //         ${canvas.getObjects()
+    //             ?.map((obj) => generateTextCode(obj))
+    //             .join("\n")}
+    //     </div>
+    // `;
+
+        console.log(fileType);
 
         const objects = generatedCode;
         const blob = new Blob([objects], { type: "text/plain" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `canvas_objects.${fileType}`;
+        // a.download = `canvas_objects.${fileType}`;
+        const extension = fileType === "jsx" ? "jsx" : fileType === "svelte" ? "svelte" : "txt";
+        a.download = `canvas_objects.${extension}`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -200,16 +206,18 @@ function Convertidor({canvas}){
               {isModalOpen && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
               <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative animate-fade-in">
-                <div className='nombre_desc'>Elige el lenguaje </div>
+                <div className='nombre_desc'>Elige el Framework </div>
                 <select
                   className="p-2 border rounded w-full mt-2"
                   value={fileType}
                   onChange={(e) => setFileType(e.target.value)}
                 >
-                  <option value="json">JSON</option>
+                  {/* <option value="json">JSON</option>
                   <option value="js">JavaScript</option>
                   <option value="xml">XML</option>
-                  <option value="html">HTML</option>
+                  <option value="html">HTML</option> */}
+                  <option value="jsx">React</option>
+                  <option value="svelte">Svelte</option>
                   
                 </select>
                 <div className="flex justify-end mt-4">

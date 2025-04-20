@@ -9,10 +9,13 @@ function Settings ({canvas}){
     const [diameter,setDiameter] = useState("");
     const [color,setColor] = useState("");
     
+    
 
     const [textSize,setTextSize] = useState("");
 
     const [textFont,setTextFont] = useState("");
+
+    const [textContent,setTextContent] = useState("");
 
     useEffect (()=>{
         if(!canvas)return;
@@ -56,6 +59,15 @@ function Settings ({canvas}){
             setColor(object.fill);
             console.log(object.fontFamily);
             setTextFont(object.fontFamily);
+        }
+        else if (object.type === "group" && object.id?.startsWith("textbox-")) {
+            const textObject = object._objects.find(obj => obj.type === "i-text");
+            if (textObject) {
+                setTextContent(textObject.text);
+                setTextSize(textObject.fontSize);
+                setTextFont(textObject.fontFamily);
+                setColor(textObject.fill);
+            }
         }
     }
 
@@ -132,6 +144,22 @@ function Settings ({canvas}){
         }
     };
 
+    const handleTextContentChange = (e) => {
+        const value = e.target.value;
+        setTextContent(value);
+    
+        if (selectedObject) {
+            if (selectedObject.type === "i-text") {
+                selectedObject.set({ text: value });
+            } else if (selectedObject.type === "group" && selectedObject.id?.startsWith("textbox-")) {
+                const textObject = selectedObject._objects.find(obj => obj.type === "i-text");
+                if (textObject) {
+                    textObject.set({ text: value });
+                }
+            }
+            canvas.renderAll();
+        }
+    };
 
     const handleTextFontChange =(e)=>{
         // console.log(e.target.value);
@@ -224,6 +252,38 @@ function Settings ({canvas}){
                     />
                 </>
             )}
+            {selectedObject && 
+  (selectedObject.type === "i-text" || (selectedObject.type === "group" && selectedObject.id?.startsWith("textbox-"))) && (
+    <>
+      <Input 
+        fluid
+        label="Texto"
+        value={textContent}
+        onChange={handleTextContentChange}
+      />
+      {/* <Input 
+        fluid
+        label="Tamaño"
+        value={textSize}
+        onChange={handleTextSizeChange}
+      />
+      <Input 
+        label="Color"
+        value={color}
+        fluid
+        type="color"
+        onChange={handleColorChange}
+      />
+      <ComboBox
+        options={textOptions}
+        value={textFont}
+        onChange={handleTextFontChange}
+        placeholder={textFont}
+        isMulti={false}
+        fluid
+      /> */}
+    </>
+)}
         </div>
     );
 }

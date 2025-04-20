@@ -673,19 +673,18 @@ function CanvasApp() {
         left: posX,
         top: posY,
         selectable: true,
-        hasControls: false,
         id: `checkbox-${uuidv4()}`,
         checked: false
       });
   
-      // Manejo de clic: alterna visibilidad del check
-      checkboxGroup.on('mousedown', function () {
-        const isChecked = checkboxGroup.checked;
-        check.set('visible', !isChecked);
-        checkboxGroup.checked = !isChecked;
-        canvas.requestRenderAll();
-        console.log(`Checkbox ${checkboxGroup.checked ? 'marcado' : 'desmarcado'}`);
-      });
+      // // Manejo de clic: alterna visibilidad del check
+      // checkboxGroup.on('mousedown', function () {
+      //   const isChecked = checkboxGroup.checked;
+      //   check.set('visible', !isChecked);
+      //   checkboxGroup.checked = !isChecked;
+      //   canvas.requestRenderAll();
+      //   console.log(`Checkbox ${checkboxGroup.checked ? 'marcado' : 'desmarcado'}`);
+      // });
   
       canvas.add(checkboxGroup);
       canvas.renderAll();

@@ -1,4 +1,4 @@
-import logo from './logo.svg';
+
 // import './App.css';
 import { Canvas, Circle, Rect, Group, IText, Triangle } from "fabric";
 import React, {useEffect, useRef,useState} from "react";
@@ -6,12 +6,12 @@ import "./styles.scss"
 import {Button, IconButton} from "blocksin-system";
 import ReactDOM from "react-dom/client";
 import {ActivityLogIcon, ButtonIcon, CalendarIcon, CheckboxIcon, ChevronDownIcon, CircleIcon, DownloadIcon, EnvelopeClosedIcon, ImageIcon, Input2Icon, LightningBoltIcon, Link2Icon, ReaderIcon, SquareIcon, TableIcon, TextIcon} from "sebikostudio-icons";
-import Settings from "./Settings"
-import CanvasSettings from './CanvasSettings';
+import Settings from "./configuracion/Settings"
+import CanvasSettings from './configuracion/CanvasSettings';
 import {handleObjectMoving,ClearGuideLines} from "./snappingHelpers";
 import { v4 as uuidv4 } from "uuid";
 import LayersList from './LayerList';
-import Convertidor from './convertidor';
+import Convertidor from './procesadorCodigo/convertidor';
 import Muestra from './Muestra';
 
 function CanvasApp() {

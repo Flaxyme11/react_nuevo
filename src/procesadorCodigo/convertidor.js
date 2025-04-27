@@ -1,14 +1,14 @@
 import { Canvas, Circle, Rect, Group, IText } from "fabric";
 import React, {useEffect, useRef,useState} from "react";
-import "./styles.scss"
+// import "./styles.scss"
 import {Button, IconButton} from "blocksin-system";
 import ReactDOM from "react-dom/client";
 import {ActivityLogIcon, ButtonIcon, CircleIcon, DownloadIcon, EnvelopeClosedIcon, LightningBoltIcon, SquareIcon, TableIcon, TextIcon} from "sebikostudio-icons";
-import Settings from "./Settings"
-import CanvasSettings from './CanvasSettings';
-import {handleObjectMoving,ClearGuideLines} from "./snappingHelpers";
+import Settings from "../configuracion/Settings"
+import CanvasSettings from '../configuracion/CanvasSettings';
+import {handleObjectMoving,ClearGuideLines} from "../snappingHelpers";
 import { v4 as uuidv4 } from "uuid";
-import LayersList from './LayerList';
+import LayersList from '../LayerList';
 import procesadorTexto from "./procesadorTexto";
 
 function Convertidor({canvas}){

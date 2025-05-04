@@ -1,11 +1,11 @@
 
 // import './App.css';
-import { Canvas, Circle, Rect, Group, IText, Triangle } from "fabric";
+import { Canvas, Circle, Rect, Group, IText, Triangle, ActiveSelection } from "fabric";
 import React, {useEffect, useRef,useState} from "react";
 import "./styles.scss"
 import {Button, IconButton} from "blocksin-system";
 import ReactDOM from "react-dom/client";
-import {ActivityLogIcon, ButtonIcon, CalendarIcon, CheckboxIcon, ChevronDownIcon, CircleIcon, DownloadIcon, EnvelopeClosedIcon, ImageIcon, Input2Icon, LightningBoltIcon, Link2Icon, ReaderIcon, SquareIcon, TableIcon, TextIcon} from "sebikostudio-icons";
+import {ActivityLogIcon, ButtonIcon, CalendarIcon, CheckboxIcon, ChevronDownIcon, CircleIcon, Cross1Icon, Cross2Icon, DownloadIcon, EnvelopeClosedIcon, ImageIcon, Input2Icon, LightningBoltIcon, Link2Icon, ReaderIcon, SquareIcon, TableIcon, TextIcon, TrashIcon} from "sebikostudio-icons";
 import Settings from "./configuracion/Settings"
 import CanvasSettings from './configuracion/CanvasSettings';
 import {handleObjectMoving,ClearGuideLines} from "./snappingHelpers";
@@ -19,6 +19,9 @@ function CanvasApp() {
   const canvasRef = useRef(null);
   const [canvas,setCanvas] = useState(null);
   const [guidelines,setGuideLines] = useState([]);
+
+  const copiedObjectRef = useRef(null);
+  const copiedObjectsRef = useRef([]);
 
   useEffect(()=>{
     if(canvasRef.current){
@@ -720,6 +723,115 @@ function CanvasApp() {
     }
   };
 
+
+
+const deleteSelectedObject = () => {
+  if (!canvas) return;
+  // let activeObjects = canvas.getActiveObjects();
+  // if (activeObjects.length) {
+  //   activeObjects.forEach(function (object) {
+  //     canvas.remove(object);
+  //   });
+  // }
+  // else {
+      
+  // }
+  // canvas.requestRenderAll();
+
+  const activeObjects = canvas.getActiveObjects();
+
+  if (activeObjects.length) {
+    activeObjects.forEach(object => {
+      canvas.remove(object);
+    });
+
+    // 🔥 Esto quita visualmente la selección del canvas
+    canvas.discardActiveObject();
+  }
+
+  canvas.requestRenderAll();
+};
+const clearCanvas = () => {
+  if (canvas) {
+    canvas.getObjects().forEach(obj => canvas.remove(obj));
+    canvas.clear(); // Borra todo, incl. background, así que restaura si quieres fondo blanco
+    canvas.backgroundColor = "#fff";
+    canvas.requestRenderAll();
+  }
+};
+
+useEffect(() => {
+  const handleKeyDown = async (e) => {
+    if (!canvas) return;
+
+
+    if (e.key === "Delete") {
+      deleteSelectedObject();
+    }
+    if (e.ctrlKey && e.key === 'c') {
+      const activeObject = canvas.getActiveObject();
+      if (activeObject) {
+        const copied = [];
+    
+        if (activeObject.type === 'activeSelection') {
+          for (const obj of activeObject.getObjects()) {
+            const clone = await obj.clone();
+            // Guarda también el ID original como referencia
+            clone._originalId = obj.id || null;
+            copied.push(clone);
+          }
+        } else {
+          const clone = await activeObject.clone();
+          clone._originalId = activeObject.id || null;
+          copied.push(clone);
+        }
+    
+        copiedObjectsRef.current = copied;
+      }
+    }
+    // Pegar (Ctrl + V)
+    if (e.ctrlKey && e.key === 'v') {
+      if (copiedObjectsRef.current.length > 0) {
+        const pasted = [];
+    
+        for (const obj of copiedObjectsRef.current) {
+          const clone = await obj.clone();
+    
+          // Extraer el ID original guardado (si existe)
+          const originalId = obj._originalId || obj.id || `object-${uuidv4()}`;
+          const prefix = originalId.split('-')[0] || 'object';
+    
+          clone.set({
+            left: (obj.left || 0) + 20,
+            top: (obj.top || 0) + 20,
+            id: `${prefix}-${uuidv4()}`,
+          });
+    
+          canvas.add(clone);
+          pasted.push(clone);
+        }
+    
+        // Seleccionar lo que se pegó
+        if (pasted.length > 1) {
+          const selection = new ActiveSelection(pasted, { canvas });
+          canvas.setActiveObject(selection);
+        } else {
+          canvas.setActiveObject(pasted[0]);
+        }
+    
+        canvas.requestRenderAll();
+      }
+    }
+  };
+
+
+  window.addEventListener("keydown", handleKeyDown);
+
+  return () => {
+    window.removeEventListener("keydown", handleKeyDown);
+  };
+}, [canvas]);
+
   return   (
     <div className="App">
       <div className="Toolbar darkmode">
@@ -764,6 +876,16 @@ function CanvasApp() {
         <ActivityLogIcon />
       </IconButton>
       </div>
+
+      <div className="ConfigBar darkmode">
+      <IconButton onClick={deleteSelectedObject} variant= "ghost" size = "medium">
+        <Cross1Icon />
+      </IconButton>
+      <IconButton onClick={clearCanvas} variant= "ghost" size = "medium">
+        <TrashIcon />
+      </IconButton>
+      </div>
+
 
       <canvas id="canvas" ref = {canvasRef}></canvas>
       <div className="SettingsWrapper">

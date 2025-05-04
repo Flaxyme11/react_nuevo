@@ -119,15 +119,23 @@ function Settings ({canvas}){
 
 
     const handleColorChange =(e)=>{
-        const value = e.target.value.replace(/,/g,"");
-        const intValue = parseInt(value,10);
+        // const value = e.target.value.replace(/,/g,"");
+        // const intValue = parseInt(value,10);
 
-        setColor(intValue);
+        // setColor(intValue);
 
 
-        if(selectedObject){
-            selectedObject.set({fill:value});
-            canvas.renderAll();
+        // if(selectedObject){
+        //     selectedObject.set({fill:value});
+        //     canvas.renderAll();
+        // }
+
+        const value = e.target.value;
+        setColor(value);
+      
+        if (selectedObject) {
+          selectedObject.set({ fill: value });
+          canvas.renderAll();
         }
     };
 

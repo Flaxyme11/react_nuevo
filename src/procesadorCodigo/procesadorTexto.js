@@ -479,60 +479,62 @@ const generateTextCodeReact = (obj) => {
       //   </select>
       // `;
       //   break;
-        // case "textbox":
-        //   console.log("Processing textbox");
-        //   return `
-        //     <textarea
-        //       style={{
-        //         position: "absolute",
-        //         top: "${obj.top}px",
-        //         left: "${obj.left}px",
-        //         width: "${obj.width}px",
-        //         height: "${obj.height}px",
-        //         fontSize: "${obj.fontSize}px",
-        //         fontFamily: "${obj.fontFamily}, sans-serif",
-        //         textAlign: "${obj.textAlign}",
-        //         lineHeight: "${obj.lineHeight}",
-        //         color: "${obj.fill}",
-        //         backgroundColor: "${obj.backgroundColor || "transparent"}",
-        //         transform: "scale(${obj.scaleX}, ${obj.scaleY})",
-        //         opacity: ${obj.opacity},
-        //         border: "${obj.strokeWidth}px solid ${obj.stroke}",
-        //         resize: "none",
-        //         overflow: "hidden"
-        //       }}
-        //       readOnly
-        //     >${obj.text}</textarea>
-        //   `;
         case "textbox":
           console.log("Processing textbox");
 
           const textChild = obj._objects?.find(child => child.type === "i-text");
 
           if (!textChild) return "";
-
           return `
-            <div style={{
-              position: "absolute",
-              top: "${obj.top}px",
-              left: "${obj.left}px",
-              width: "${obj.width * obj.scaleX}px",
-              height: "${obj.height * obj.scaleY}px",
-              backgroundColor: "#fff",
-              border: "1px solid #000",
-              borderRadius: "4px",
-              padding: "5px",
-              fontSize: "${textChild.fontSize}px",
-              fontFamily: "${textChild.fontFamily}, sans-serif",
-              color: "${textChild.fill}",
-                  // transform: "rotate(${obj.angle || 0}deg) scale(${obj.scaleX}, ${obj.scaleY})",
-                  transform: "rotate(${obj.angle || 0}deg) ",
-              transformOrigin: "top left",
-              overflow: "hidden"
-            }}>
-              ${textChild.text}
-            </div>
+            <textarea
+              style={{
+                position: "absolute",
+                top: "${obj.top}px",
+                left: "${obj.left}px",
+                width: "${obj.width}px",
+                height: "${obj.height}px",
+                fontSize: "${textChild.fontSize}px",
+                fontFamily: "${textChild.fontFamily}, sans-serif",
+                textAlign: "${obj.textAlign}",
+                lineHeight: "${obj.lineHeight}",
+                color: "${textChild.fill}",
+                backgroundColor: "${obj.backgroundColor || "transparent"}",
+                transform: "rotate(${obj.angle || 0}deg) ",
+                opacity: ${obj.opacity},
+                transformOrigin: "top left",
+                overflow: "hidden"
+              }}
+            >${textChild.text}</textarea>
           `;
+        // case "textbox":
+        //   console.log("Processing textbox");
+
+        //   // const textChild = obj._objects?.find(child => child.type === "i-text");
+
+        //   if (!textChild) return "";
+
+        //   return `
+        //     <div style={{
+        //       position: "absolute",
+        //       top: "${obj.top}px",
+        //       left: "${obj.left}px",
+        //       width: "${obj.width * obj.scaleX}px",
+        //       height: "${obj.height * obj.scaleY}px",
+        //       backgroundColor: "#fff",
+        //       border: "1px solid #000",
+        //       borderRadius: "4px",
+        //       padding: "5px",
+        //       fontSize: "${textChild.fontSize}px",
+        //       fontFamily: "${textChild.fontFamily}, sans-serif",
+        //       color: "${textChild.fill}",
+        //           // transform: "rotate(${obj.angle || 0}deg) scale(${obj.scaleX}, ${obj.scaleY})",
+        //           transform: "rotate(${obj.angle || 0}deg) ",
+        //       transformOrigin: "top left",
+        //       overflow: "hidden"
+        //     }}>
+        //       ${textChild.text}
+        //     </div>
+        //   `;
         case "button":
           console.log("Processing button");
 

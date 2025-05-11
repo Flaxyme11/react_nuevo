@@ -362,7 +362,8 @@ function CanvasApp() {
           top: posY,
           selectable: true,
           hasControls: true,
-          id: `datepicker-${uuidv4()}`
+          id: `datepicker-${uuidv4()}`,
+          modo:"dd/mm/yyyy"
         }
       );
   

@@ -153,30 +153,55 @@ const generateTextCodeSvelte = (obj) => {
 
         if (!textChild) return "";
 
-        return`
-            <div
-              style="
-                position: absolute;
-                top: ${obj.top}px;
-                left: ${obj.left}px;
-                width: ${obj.width * obj.scaleX}px;
-                height: ${obj.height * obj.scaleY}px;
-                background-color: #fff;
-                border: 1px solid #000;
-                border-radius: 4px;
-                padding: 5px;
-                font-size: ${textChild.fontSize}px;
-                font-family: ${textChild.fontFamily}, sans-serif;
-                color: ${textChild.fill};
-                transform: rotate(${obj.angle || 0}deg);
-                transform-origin: top left ;
-                overflow: hidden;
-              "
-            >
-              ${textChild.text}
-            </div>
-          `
+        return  `
+        <input
+          type="text"
+          value="${textChild.text}"
+          style="
+            position: absolute;
+            top: ${obj.top}px;
+            left: ${obj.left}px;
+            width: ${obj.width * obj.scaleX}px;
+            height: ${obj.height * obj.scaleY}px;
+            background-color: #fff;
+            border: 1px solid #000;
+            border-radius: 4px;
+            padding: 5px;
+            font-size: ${textChild.fontSize}px;
+            font-family: ${textChild.fontFamily}, sans-serif;
+            color: ${textChild.fill};
+            line-height: ${textChild.lineHeight || 1.2};
+            transform: rotate(${obj.angle || 0}deg) scale(${obj.scaleX}, ${obj.scaleY});
+            transform-origin: center center;
+          "
+        />`
 
+        //`
+        //     <div
+        //       style="
+        //         position: absolute;
+        //         top: ${obj.top}px;
+        //         left: ${obj.left}px;
+        //         width: ${obj.width * obj.scaleX}px;
+        //         height: ${obj.height * obj.scaleY}px;
+        //         background-color: #fff;
+        //         border: 1px solid #000;
+        //         border-radius: 4px;
+        //         padding: 5px;
+        //         font-size: ${textChild.fontSize}px;
+        //         font-family: ${textChild.fontFamily}, sans-serif;
+        //         color: ${textChild.fill};
+        //         transform: rotate(${obj.angle || 0}deg);
+        //         transform-origin: top left ;
+        //         overflow: hidden;
+        //       "
+        //     >
+        //       ${textChild.text}
+        //     </div>
+        //   `
+
+
+          
         //   <div style={{
         //     position: "absolute",
         //     top: "${obj.top}px",
@@ -599,6 +624,9 @@ const generateTextCodeReact = (obj) => {
           
             const dateTextObj = obj._objects?.find(child => child.type === "i-text" && child.text?.includes("/"));
             const defaultDate = dateTextObj?.text || "dd/mm/yyyy";
+            const modo = obj.modo;
+
+            console.log(modo);
           
             return `
               <input

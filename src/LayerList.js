@@ -23,9 +23,13 @@ function LayersList({canvas}){
         if (object.opacity === 0) {
           object.opacity = object.prevOpacity || 1;
           object.prevOpacity = undefined;
+          object.selectable = true;
+          object.evented = true;
         } else {
           object.prevOpacity = object.opacity || 1;
           object.opacity = 0;
+          object.selectable = false;
+          object.evented = false;
         }
     
         canvas.renderAll();

@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-const procesadorTexto = (canvas,fileType) => {
+const procesadorTexto = (canvas,fileType,fileName) => {
   // Lógica para procesar el string (puedes personalizar esto)
 
   const canvasWidth = canvas.width;
@@ -11,17 +11,25 @@ const procesadorTexto = (canvas,fileType) => {
         // const canvasWidth = canvas.width;
         // const canvasHeight = canvas.height;
       return `
-          <div style={{
-              position: "relative",
-              width: "${canvasWidth}px",
-              height: "${canvasHeight}px",
-              border: "1px solid black",
-              backgroundColor: "white",
-          }}>
-              ${canvas.getObjects()
-                  ?.map((obj) => generateTextCodeReact(obj))
-                  .join("\n")}
-          </div>
+import './${fileName}.css';
+
+function ${fileName}() {
+  return (
+    <div style={{
+        position: "relative",
+        width: "${canvasWidth}px",
+        height: "${canvasHeight}px",
+        border: "1px solid black",
+        backgroundColor: "white",
+    }}>
+        ${canvas.getObjects()
+            ?.map((obj) => generateTextCodeReact(obj))
+            .join("\n")}
+    </div>
+      );
+    }
+
+export default ${fileName};
       `;
   
     case "svelte":
@@ -29,6 +37,15 @@ const procesadorTexto = (canvas,fileType) => {
       // const canvasHeight = canvas.height;
       // Aquí puedes definir una lógica diferente para Svelte si lo necesitas.
       return  `
+
+<script>
+  </script>
+  
+  <style>
+	
+  </style>
+  
+
       <div style="
           position: relative;
           width: ${canvasWidth}px;
@@ -112,7 +129,6 @@ const generateTextCodeSvelte = (obj) => {
             `;
       break;
       case "rect":
-          console.log("Processing rectangle");
           return  `
           <div
             style="
@@ -156,7 +172,7 @@ const generateTextCodeSvelte = (obj) => {
         return  `
         <input
           type="text"
-          value="${textChild.text}"
+          placeholder="${textChild.text}"
           style="
             position: absolute;
             top: ${obj.top}px;
@@ -429,9 +445,6 @@ const generateTextCodeReact = (obj) => {
     console.log(obj.id?.split("-")[0]);
 
     switch (objectType) {
-      case "nyancat":
-        console.log("Processing nyanCatForm");
-        break;
       case "text":
         console.log("Processing  text");
         break;
@@ -466,7 +479,6 @@ const generateTextCodeReact = (obj) => {
         `;
         break;
         case "rect":
-            console.log("Processing rectangle");
             return `
                 <div style={{
                     position: "absolute",
@@ -509,27 +521,53 @@ const generateTextCodeReact = (obj) => {
 
           const textChild = obj._objects?.find(child => child.type === "i-text");
 
+          const textChildTop = textChild.top || 0;
+
           if (!textChild) return "";
+          // return `
+          //   <textarea
+          //     style={{
+          //       position: "absolute",
+          //       top: "${obj.top}px",
+          //       left: "${obj.left}px",
+          //       width: "${obj.width}px",
+          //       height: "${obj.height}px",
+          //       fontSize: "${textChild.fontSize}px",
+          //       fontFamily: "${textChild.fontFamily}, sans-serif",
+          //       textAlign: "${obj.textAlign}",
+          //       lineHeight: "${obj.lineHeight}",
+          //       color: "${textChild.fill}",
+          //       backgroundColor: "${obj.backgroundColor || "transparent"}",
+          //       transform: "rotate(${obj.angle || 0}deg) ",
+          //       opacity: ${obj.opacity},
+          //       transformOrigin: "top left",
+          //       overflow: "hidden"
+          //     }}
+          //   >${textChild.text}</textarea>
+          // `;
+
           return `
-            <textarea
-              style={{
-                position: "absolute",
-                top: "${obj.top}px",
-                left: "${obj.left}px",
-                width: "${obj.width}px",
-                height: "${obj.height}px",
-                fontSize: "${textChild.fontSize}px",
-                fontFamily: "${textChild.fontFamily}, sans-serif",
-                textAlign: "${obj.textAlign}",
-                lineHeight: "${obj.lineHeight}",
-                color: "${textChild.fill}",
-                backgroundColor: "${obj.backgroundColor || "transparent"}",
-                transform: "rotate(${obj.angle || 0}deg) ",
-                opacity: ${obj.opacity},
-                transformOrigin: "top left",
-                overflow: "hidden"
-              }}
-            >${textChild.text}</textarea>
+              <input
+                type="text"
+                placeholder={\`${textChild.text}\`}
+                style={{
+                  position: "absolute",
+                  top: "${obj.top }px",
+                  left: "${obj.left }px",
+                  width: "${obj.width * obj.scaleX}px",
+                  height: "${obj.height * obj.scaleY}px",
+                  backgroundColor: "#fff",
+                  border: "1px solid #000",
+                  borderRadius: "4px",
+                  padding: "5px",
+                  fontSize: "${textChild.fontSize}px",
+                  fontFamily: "${textChild.fontFamily}, sans-serif",
+                  color: "${textChild.fill}",
+                  lineHeight: ${textChild.lineHeight || 1.2} ,
+                  transform: "rotate(${obj.angle || 0}deg) scale(${obj.scaleX}, ${obj.scaleY}",
+                  transformOrigin: "top left"
+                }}
+              />
           `;
         // case "textbox":
         //   console.log("Processing textbox");

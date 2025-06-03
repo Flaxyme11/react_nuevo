@@ -65,7 +65,6 @@ function CanvasApp() {
         width: 100,
         height: 60,
         fill: "#D84D42",
-        // id:"hola"
         id: `rect-${uuidv4()}`,
       });
       canvas.add(rect);

@@ -41,7 +41,10 @@ function Convertidor({canvas}){
         // .join("\n");
 
 
-        const generatedCode =  procesadorTexto(canvas,fileType);
+        const fileName = prompt("Ingresa el nombre del archivo:");
+        if (!fileName) return;
+
+        const generatedCode =  procesadorTexto(canvas,fileType,fileName);
 
     //     const canvasWidth = canvas.width;
     //     const canvasHeight = canvas.height;
@@ -69,7 +72,7 @@ function Convertidor({canvas}){
         a.href = url;
         // a.download = `canvas_objects.${fileType}`;
         const extension = fileType === "jsx" ? "jsx" : fileType === "svelte" ? "svelte" : "txt";
-        a.download = `canvas_objects.${extension}`;
+        a.download = `${fileName}.${extension}`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);

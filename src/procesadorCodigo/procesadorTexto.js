@@ -46,17 +46,17 @@ export default ${fileName};
   </style>
   
 
-      <div style="
-          position: relative;
-          width: ${canvasWidth}px;
-          height: ${canvasHeight}px;
-          border: 1px solid black;
-          backgroundColor: white;"
-      >
-          ${canvas.getObjects()
-              ?.map((obj) => generateTextCodeSvelte(obj))
-              .join("\n")}
-      </div>
+  <div style="
+      position: relative;
+      width: ${canvasWidth}px;
+      height: ${canvasHeight}px;
+      border: 1px solid black;
+      backgroundColor: white;"
+  >
+      ${canvas.getObjects()
+          ?.map((obj) => generateTextCodeSvelte(obj))
+          .join("\n")}
+  </div>
   `;
     default:
       return "// Unsupported fileType";

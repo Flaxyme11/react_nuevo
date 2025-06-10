@@ -446,7 +446,7 @@ function CanvasApp() {
         // underline: true,    // Subrayado (true o false)
         // overline: false,    // Línea sobre el texto
         // linethrough: false, // Tachado
-        // textAlign: 'center', // Alineación ('left', 'center', 'right', 'justify')
+        textAlign: 'center', // Alineación ('left', 'center', 'right', 'justify')
         // fill: '#ff0000',    // Color del texto
         // stroke: '#000000',  // Color del borde del texto
         // strokeWidth: 2,     // Grosor del borde del texto
@@ -696,7 +696,7 @@ function CanvasApp() {
   
   const addHyperlink = () => {
     if (canvas) {
-      const url = 'https://openai.com';
+      const url = 'https://www.google.com/?hl=es';
       const label = 'Enlace';
       const posX = 100;
       const posY = 800;

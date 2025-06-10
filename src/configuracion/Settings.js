@@ -1,4 +1,4 @@
-import { DropdownMenu, Input,IconButton,ComboBox} from "blocksin-system";
+import { DropdownMenu, Input,IconButton,ComboBox,Checkbox} from "blocksin-system";
 import React,{useState,useEffect} from "react";
 import {CircleIcon, SquareIcon, SliderIcon} from "sebikostudio-icons";
 function Settings ({canvas}){
@@ -16,6 +16,8 @@ function Settings ({canvas}){
     const [textFont,setTextFont] = useState("");
 
     const [textContent,setTextContent] = useState("");
+    
+    const [textAlign,setTextAlign] = useState("");
 
     useEffect (()=>{
         if(!canvas)return;
@@ -59,6 +61,7 @@ function Settings ({canvas}){
             setColor(object.fill);
             console.log(object.fontFamily);
             setTextFont(object.fontFamily);
+            setTextAlign(object.textAlign);
         }
         else if (object.type === "group" && object.id?.startsWith("textbox-")) {
             const textObject = object._objects.find(obj => obj.type === "i-text");
@@ -182,6 +185,22 @@ function Settings ({canvas}){
             canvas.renderAll();
         }
     };
+
+
+    const handleTextAlignChange =(e)=>{
+        // console.log(e.target.value);
+        const value = e.target.value;
+
+        if (!e) return;
+        setTextAlign(value);
+
+
+        if(selectedObject && selectedObject.type === "i-text" ){
+            selectedObject.set({textAlign:value});
+            canvas.renderAll();
+        }
+    };
+
     const textOptions = [
         { label: "Arial", value: "1"},
         { label: "Open Sans", value: "2"},
@@ -258,7 +277,37 @@ function Settings ({canvas}){
                     isMulti={false}
                     fluid
                     />
+                <select
+                value={textAlign}
+                onChange={handleTextAlignChange}
+                style={{ width: "100%", padding: "5px" }}
+                >
+                <option value="left">Left</option>
+                <option value="center">Center</option>
+                <option value="right">Right</option>
+                </select>
+                <Checkbox
+  label="Underline"
+//   checked={underline}
+//   onChange={(e) => setUnderline(e.target.checked)}
+/>
+<Checkbox
+  label="Strikethrough"
+//   checked={strikethrough}
+//   onChange={(e) => setStrikethrough(e.target.checked)}
+/>
+                {/* <DropdownMenu
+                    label="Text Align"
+                    selected={textAlign}
+                    onChange={(value) => setTextAlign(value)}
+                    options={[
+                        { label: 'Left', value: 'left' },
+                        { label: 'Center', value: 'center' },
+                        { label: 'Right', value: 'right' }
+                    ]}
+                /> */}
                 </>
+                
             )}
             {selectedObject && 
   (selectedObject.type === "i-text" || (selectedObject.type === "group" && selectedObject.id?.startsWith("textbox-"))) && (

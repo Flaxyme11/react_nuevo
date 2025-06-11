@@ -443,7 +443,7 @@ function CanvasApp() {
         // fontFamily: 'Arial', // Familia de fuente
         // fontWeight: 'bold', // Peso de la fuente ('normal', 'bold', '100'-'900')
         // fontStyle: 'italic', // Estilo de la fuente ('normal', 'italic', 'oblique')
-        // underline: true,    // Subrayado (true o false)
+        underline: false,    // Subrayado (true o false)
         // overline: false,    // Línea sobre el texto
         // linethrough: false, // Tachado
         textAlign: 'center', // Alineación ('left', 'center', 'right', 'justify')

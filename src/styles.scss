@@ -215,3 +215,12 @@ button.button:not(.button-fluid) {
     }
   }
 }
+
+
+.checkbox-group{
+
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  margin-top: 8px;
+}

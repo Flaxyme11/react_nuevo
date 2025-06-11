@@ -18,6 +18,9 @@ function Settings ({canvas}){
     const [textContent,setTextContent] = useState("");
     
     const [textAlign,setTextAlign] = useState("");
+    const [isBold, setIsBold] = useState("");
+    const [textUnderLine,setTextUnderline] = useState("");
+    const [textItalic,setTextItalic] = useState("");
 
     useEffect (()=>{
         if(!canvas)return;
@@ -62,6 +65,16 @@ function Settings ({canvas}){
             console.log(object.fontFamily);
             setTextFont(object.fontFamily);
             setTextAlign(object.textAlign);
+            console.log(object.fontWeight);
+            console.log(object.underline);
+            if(object.fontWeight === "bold") {
+                setIsBold(true);
+            }else setIsBold(false);
+            if(object.fontStyle === "normal") {
+                setTextItalic(false);
+            }else setTextItalic(true);
+
+            setTextUnderline(object.underline);
         }
         else if (object.type === "group" && object.id?.startsWith("textbox-")) {
             const textObject = object._objects.find(obj => obj.type === "i-text");
@@ -116,6 +129,37 @@ function Settings ({canvas}){
 
         if(selectedObject && selectedObject.type === "circle" && intValue >= 0){
             selectedObject.set({radius:intValue/2 / selectedObject.scaleX});
+            canvas.renderAll();
+        }
+    };
+
+    const handleNegritaChange = (e) => {
+        
+        const value = e;
+        setIsBold(value);
+
+        if(selectedObject && selectedObject.type === "i-text"){
+            selectedObject.set({fontWeight: value ? "bold" : "normal"});
+            canvas.renderAll();
+        }
+    };
+
+    const handleSubrayadoChange = (e) => {
+        const value = e;
+        setTextUnderline(value);
+
+        if (selectedObject && selectedObject.type === "i-text") {
+            selectedObject.set({ underline: value ? true : false });
+            canvas.renderAll();
+        }
+    };
+
+    const handleCursivaChange = (e) => {
+        const value = e;
+        setTextItalic(value);
+
+        if (selectedObject && selectedObject.type === "i-text") {
+            selectedObject.set({ fontStyle: value ? "italic" : "normal" });
             canvas.renderAll();
         }
     };
@@ -286,16 +330,32 @@ function Settings ({canvas}){
                 <option value="center">Center</option>
                 <option value="right">Right</option>
                 </select>
-                <Checkbox
-  label="Underline"
-//   checked={underline}
-//   onChange={(e) => setUnderline(e.target.checked)}
-/>
-<Checkbox
-  label="Strikethrough"
-//   checked={strikethrough}
-//   onChange={(e) => setStrikethrough(e.target.checked)}
-/>
+                <div className="checkbox-group">
+                    <Checkbox
+                        label="Underline"
+                        checked={textUnderLine}
+                        onChange={handleSubrayadoChange}
+                    >
+                        Subrayado
+                    </Checkbox>
+                    <Checkbox
+                        label="bold"
+                        checked={isBold}
+                        onChange={handleNegritaChange}
+                        >
+                        Negrita
+                    </Checkbox>
+                </div>
+                <div className="checkbox-group">
+                    <Checkbox
+                        label="italic"
+                        checked={textItalic}
+                        onChange={handleCursivaChange}
+                        >
+                        Cursiva
+                    </Checkbox>
+                </div>
+                
                 {/* <DropdownMenu
                     label="Text Align"
                     selected={textAlign}

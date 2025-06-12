@@ -22,6 +22,10 @@ function Settings ({canvas}){
     const [textUnderLine,setTextUnderline] = useState("");
     const [textItalic,setTextItalic] = useState("");
 
+    const [rx, setRx] = useState(0); // suavidad de borde
+    const [strokeColor, setStrokeColor] = useState("");
+    const [fillColor, setFillColor] = useState("");
+
     useEffect (()=>{
         if(!canvas)return;
         canvas.on("selection:created",(event)=>{
@@ -78,14 +82,125 @@ function Settings ({canvas}){
         }
         else if (object.type === "group" && object.id?.startsWith("textbox-")) {
             const textObject = object._objects.find(obj => obj.type === "i-text");
+            const rect = object._objects.find(obj => obj.type === "rect");
+            const text = object._objects.find(obj => obj.type === "i-text");
+            
             if (textObject) {
+                console.log(textObject);
                 setTextContent(textObject.text);
-                setTextSize(textObject.fontSize);
-                setTextFont(textObject.fontFamily);
-                setColor(textObject.fill);
+                setTextSize(text.fontSize);
+                setTextFont(text.fontFamily);
+                setColor(text.fill);
+                setWidth(rect.width);
+                setHeight(rect.height);
+                setRx(rect.rx || 0);
+                setStrokeColor(rect.stroke);
+                setFillColor(rect.fill);
             }
         }
+        else if (object.type === "group" && object.id?.startsWith("button-")) {
+            const rect = object._objects.find(obj => obj.type === "rect");
+            const text = object._objects.find(obj => obj.type === "i-text");
+
+            if (rect && text) {
+                setTextContent(text.text);
+                setTextSize(text.fontSize);
+                setTextFont(text.fontFamily);
+                setColor(text.fill);
+                setWidth(rect.width);
+                setHeight(rect.height);
+                setRx(rect.rx || 0);
+                setStrokeColor(rect.stroke);
+                setFillColor(rect.fill);
+            }
+
+            setSelectedObject(object);
+        }
+        else if (object.type === "group" && object.id?.startsWith("combobox-")) {
+            const rect = object._objects.find(obj => obj.type === "rect");
+            const text = object._objects.find(obj => obj.type === "i-text");
+
+            if (rect && text) {
+                setTextContent(text.text);
+                setTextSize(text.fontSize);
+                setTextFont(text.fontFamily);
+                setColor(text.fill);
+                setWidth(rect.width);
+                setHeight(rect.height);
+                setRx(rect.rx || 0);
+                setStrokeColor(rect.stroke);
+                setFillColor(rect.fill);
+            }
+
+            setSelectedObject(object);
+        }
     }
+
+const handleRxChange = (e) => {
+    const value = parseInt(e.target.value, 10);
+    setRx(value);
+
+    if (selectedObject?.type === "group" && (selectedObject.id?.startsWith("button-") || selectedObject.id?.startsWith("textbox-") || selectedObject.id?.startsWith("combobox-"))) {
+        const rect = selectedObject._objects.find(obj => obj.type === "rect");
+        if (rect) {
+            rect.set({ rx: value, ry: value });
+            canvas.renderAll();
+        }
+    }
+};
+
+const handleFillColorChange = (e) => {
+    const value = e.target.value;
+    setFillColor(value);
+
+    if (selectedObject?.type === "group" &&  (selectedObject.id?.startsWith("button-") || selectedObject.id?.startsWith("textbox-")|| selectedObject.id?.startsWith("combobox-"))) {
+        const rect = selectedObject._objects.find(obj => obj.type === "rect");
+        if (rect) {
+            rect.set({ fill: value });
+            canvas.renderAll();
+        }
+    }
+};
+
+const handleStrokeColorChange = (e) => {
+    const value = e.target.value;
+    setStrokeColor(value);
+
+    if (selectedObject?.type === "group" &&  (selectedObject.id?.startsWith("button-") || selectedObject.id?.startsWith("textbox-")|| selectedObject.id?.startsWith("combobox-"))) {
+        const rect = selectedObject._objects.find(obj => obj.type === "rect");
+        if (rect) {
+            rect.set({ stroke: value });
+            canvas.renderAll();
+        }
+    }
+};
+
+const handleButtonTextChange = (e) => {
+    const value = e.target.value;
+    setTextContent(value);
+
+    if (selectedObject?.type === "group" && (selectedObject.id?.startsWith("button-") || selectedObject.id?.startsWith("combobox-"))) {
+        const text = selectedObject._objects.find(obj => obj.type === "i-text");
+        if (text) {
+            text.set({ text: value });
+            canvas.renderAll();
+        }
+    }
+};
+
+const handleButtonTextColorChange = (e) => {
+    console.log(e)
+    const value = e.target.value;
+    setColor(value);
+
+    if (selectedObject?.type === "group" && (selectedObject.id?.startsWith("button-") || selectedObject.id?.startsWith("textbox-")|| selectedObject.id?.startsWith("combobox-"))) {
+        const text = selectedObject._objects.find(obj => obj.type === "i-text");
+        if (text) {
+            text.set({ fill: value });
+            canvas.renderAll();
+        }
+    }
+};
 
     const clearSettings = ()=>{
         setWidth("");
@@ -253,155 +368,149 @@ function Settings ({canvas}){
 
 
 
-    return (
-        <div className="Settings darkmode">
-            {selectedObject && selectedObject.type === "rect" && (
-                <>
-                <Input 
-                 fluid
-                 label="Width"
-                 value = {width}
-                 onChange={handleWidthChange}
-                />
-                <Input 
-                 label = "Height"
-                 value={height}
-                 fluid 
-                 onChange={handleHeightChange}
-                />
-
-                <Input 
-                 label = "Color"
-                 value={color}
-                 fluid 
-                 type="color"
-                 onChange={handleColorChange}
-                />
-                </>
-            )}
-
-            {selectedObject && selectedObject.type === "circle" && (
-                <>
-                <Input 
-                 fluid
-                 label="Diameter"
-                 value = {diameter}
-                 onChange={handleDiamaterChange}
-                />
-                <Input 
-                 label = "Color"
-                 value={color}
-                 fluid 
-                 type="color"
-                 onChange={handleColorChange}
-                />
-                </>
-            )}
-
-            {selectedObject && selectedObject.type === "i-text" && (
-                <>
-                <Input 
-                 fluid
-                 label="Size"
-                 value = {textSize}
-                 onChange={handleTextSizeChange}
-                />
-                <Input 
-                 label = "Color"
-                 value={color}
-                 fluid 
-                 type="color"
-                 onChange={handleColorChange}
-                />
-                    <ComboBox
-                    options={textOptions}
-                    value={textFont}
-                    onChange={handleTextFontChange}
-                    placeholder={textFont}
-                    isMulti={false}
-                    fluid
-                    />
-                <select
-                value={textAlign}
-                onChange={handleTextAlignChange}
-                style={{ width: "100%", padding: "5px" }}
-                >
-                <option value="left">Left</option>
-                <option value="center">Center</option>
-                <option value="right">Right</option>
-                </select>
-                <div className="checkbox-group">
-                    <Checkbox
-                        label="Underline"
-                        checked={textUnderLine}
-                        onChange={handleSubrayadoChange}
-                    >
-                        Subrayado
-                    </Checkbox>
-                    <Checkbox
-                        label="bold"
-                        checked={isBold}
-                        onChange={handleNegritaChange}
-                        >
-                        Negrita
-                    </Checkbox>
-                </div>
-                <div className="checkbox-group">
-                    <Checkbox
-                        label="italic"
-                        checked={textItalic}
-                        onChange={handleCursivaChange}
-                        >
-                        Cursiva
-                    </Checkbox>
-                </div>
-                
-                {/* <DropdownMenu
-                    label="Text Align"
-                    selected={textAlign}
-                    onChange={(value) => setTextAlign(value)}
-                    options={[
-                        { label: 'Left', value: 'left' },
-                        { label: 'Center', value: 'center' },
-                        { label: 'Right', value: 'right' }
-                    ]}
-                /> */}
-                </>
-                
-            )}
-            {selectedObject && 
-  (selectedObject.type === "i-text" || (selectedObject.type === "group" && selectedObject.id?.startsWith("textbox-"))) && (
+    const RectSettings = ({ width, height, color, onWidthChange, onHeightChange, onColorChange }) => (
     <>
-      <Input 
-        fluid
-        label="Texto"
-        value={textContent}
-        onChange={handleTextContentChange}
-      />
-      {/* <Input 
-        fluid
-        label="Tamaño"
-        value={textSize}
-        onChange={handleTextSizeChange}
-      />
-      <Input 
-        label="Color"
-        value={color}
-        fluid
-        type="color"
-        onChange={handleColorChange}
-      />
-      <ComboBox
-        options={textOptions}
-        value={textFont}
-        onChange={handleTextFontChange}
-        placeholder={textFont}
-        isMulti={false}
-        fluid
-      /> */}
+        <Input label="Width" value={width} onChange={onWidthChange} fluid />
+        <Input label="Height" value={height} onChange={onHeightChange} fluid />
+        <Input label="Color" value={color} onChange={onColorChange} type="color" fluid />
     </>
-)}
+    );
+    const CircleSettings = ({ diameter, color, onDiameterChange, onColorChange }) => (
+        <>
+            <Input label="Diameter" value={diameter} onChange={onDiameterChange} fluid />
+            <Input label="Color" value={color} onChange={onColorChange} type="color" fluid />
+        </>
+    );
+
+    const TextSettings = ({
+    textSize, color, textFont, textAlign, isBold, textUnderline, textItalic,
+    onTextSizeChange, onColorChange, onFontChange, onAlignChange,
+    onBoldChange, onUnderlineChange, onItalicChange, fontOptions
+    }) => (
+    <>
+        <Input label="Size" value={textSize} onChange={onTextSizeChange} fluid />
+        <Input label="Color" value={color} onChange={onColorChange} type="color" fluid />
+        <ComboBox options={fontOptions} value={textFont} onChange={onFontChange} placeholder={textFont} isMulti={false} fluid />
+        <select value={textAlign} onChange={onAlignChange} style={{ width: "100%", padding: "5px" }}>
+            <option value="left">Left</option>
+            <option value="center">Center</option>
+            <option value="right">Right</option>
+        </select>
+        <div className="checkbox-group">
+        <Checkbox label="Underline" checked={textUnderline} onChange={onUnderlineChange}>Subrayado</Checkbox>
+        <Checkbox label="Bold" checked={isBold} onChange={onBoldChange}>Negrita</Checkbox>
+        <Checkbox label="Italic" checked={textItalic} onChange={onItalicChange}>Cursiva</Checkbox>
         </div>
+    </>
+    );
+
+    const GroupSettings = ({
+        textContent, color, fillColor, strokeColor, rx,
+        onTextChange, onTextColorChange, onFillColorChange,
+        onStrokeColorChange, onRxChange, placeholder = "Texto"
+    }) => (
+    <>
+        <Input label={placeholder} value={textContent} onChange={onTextChange} fluid />
+        <Input label="Color texto" value={color} onChange={onTextColorChange} type="color" fluid />
+        <Input label="Color fondo" value={fillColor} onChange={onFillColorChange} type="color" fluid />
+        <Input label="Color borde" value={strokeColor} onChange={onStrokeColorChange} type="color" fluid />
+        <Input label="Radio borde" value={rx} onChange={onRxChange} type="number" fluid min={0} max={20} step={1} />
+    </>
+    );
+
+        // alias
+    const TextboxSettings = GroupSettings;
+    const ButtonSettings = GroupSettings;
+    const ComboBoxSettings = GroupSettings;
+
+
+    return (
+       <div className="Settings darkmode">
+    {selectedObject?.type === "rect" && (
+      <RectSettings
+        width={width}
+        height={height}
+        color={color}
+        onWidthChange={handleWidthChange}
+        onHeightChange={handleHeightChange}
+        onColorChange={handleColorChange}
+      />
+    )}
+
+    {selectedObject?.type === "circle" && (
+      <CircleSettings
+        diameter={diameter}
+        color={color}
+        onDiameterChange={handleDiamaterChange}
+        onColorChange={handleColorChange}
+      />
+    )}
+
+    {selectedObject?.type === "i-text" && (
+      <TextSettings
+        textSize={textSize}
+        color={color}
+        textFont={textFont}
+        textAlign={textAlign}
+        isBold={isBold}
+        textUnderline={textUnderLine}
+        textItalic={textItalic}
+        onTextSizeChange={handleTextSizeChange}
+        onColorChange={handleColorChange}
+        onFontChange={handleTextFontChange}
+        onAlignChange={handleTextAlignChange}
+        onBoldChange={handleNegritaChange}
+        onUnderlineChange={handleSubrayadoChange}
+        onItalicChange={handleCursivaChange}
+        fontOptions={textOptions}
+      />
+    )}
+
+    {selectedObject?.type === "group" && selectedObject.id?.startsWith("textbox-") && (
+      <TextboxSettings
+        textContent={textContent}
+        color={color}
+        fillColor={fillColor}
+        strokeColor={strokeColor}
+        rx={rx}
+        onTextChange={handleTextContentChange}
+        onTextColorChange={handleButtonTextColorChange}
+        onFillColorChange={handleFillColorChange}
+        onStrokeColorChange={handleStrokeColorChange}
+        onRxChange={handleRxChange}
+      />
+    )}
+
+    {selectedObject?.id?.startsWith("button-") && (
+      <ButtonSettings
+        textContent={textContent}
+        color={color}
+        fillColor={fillColor}
+        strokeColor={strokeColor}
+        rx={rx}
+        onTextChange={handleButtonTextChange}
+        onTextColorChange={handleButtonTextColorChange}
+        onFillColorChange={handleFillColorChange}
+        onStrokeColorChange={handleStrokeColorChange}
+        onRxChange={handleRxChange}
+      />
+    )}
+
+    {selectedObject?.id?.startsWith("combobox-") && (
+      <ComboBoxSettings
+        textContent={textContent}
+        color={color}
+        fillColor={fillColor}
+        strokeColor={strokeColor}
+        rx={rx}
+        onTextChange={handleButtonTextChange}
+        onTextColorChange={handleButtonTextColorChange}
+        onFillColorChange={handleFillColorChange}
+        onStrokeColorChange={handleStrokeColorChange}
+        onRxChange={handleRxChange}
+      />
+    )}
+  </div>
     );
 }
 

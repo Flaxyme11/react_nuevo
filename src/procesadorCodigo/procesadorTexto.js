@@ -84,7 +84,9 @@ const generateTextCodeSvelte = (obj) => {
           top: ${obj.top}px;
           left: ${obj.left}px;
           font-size: ${obj.fontSize}px;
-          font-family: ${obj.fontFamily}, sans-serif;
+          font-family: ${obj.fontFamily};
+          font-weight: ${obj.fontWeight || 'normal'};  /* Negrita */
+          font-style: ${obj.fontStyle || 'normal'};   /* Cursiva */
           text-decoration: ${obj.underline ? 'underline' : 'none'};
           text-align: ${obj.textAlign};
           line-height: ${obj.lineHeight};
@@ -96,7 +98,9 @@ const generateTextCodeSvelte = (obj) => {
           -webkit-text-stroke: ${obj.strokeWidth}px ${obj.stroke};
         "
       >
-        ${obj.text}
+        ${obj.textLines.map((line, index) => 
+          index < obj.textLines.length - 1 ? line + '<br />' : line
+        ).join('')}
       </span>
     `;      
     case "table":
@@ -166,8 +170,14 @@ const generateTextCodeSvelte = (obj) => {
         console.log("Processing textbox");
 
         const textChild = obj._objects?.find(child => child.type === "i-text");
+        const rect2 = obj._objects?.find(child => child.type === "rect");
+        const text2 = obj._objects?.find(child => child.type === "i-text");
 
         if (!textChild) return "";
+        const rx2 = rect2.rx || 0;
+        const stroke2 = rect2.stroke || "#000";
+        const strokeWidth2 = rect2.strokeWidth || 1;
+        const fill2 = rect2.fill || "#fff";
 
         return  `
         <input
@@ -177,11 +187,11 @@ const generateTextCodeSvelte = (obj) => {
             position: absolute;
             top: ${obj.top}px;
             left: ${obj.left}px;
-            width: ${obj.width * obj.scaleX}px;
-            height: ${obj.height * obj.scaleY}px;
-            background-color: #fff;
-            border: 1px solid #000;
-            border-radius: 4px;
+            width: ${obj.width}px;
+            height: ${obj.height}px;
+            background-color: ${fill2};
+            border: ${strokeWidth2}px solid ${stroke2};
+            border-radius: ${rx2}px;
             padding: 5px;
             font-size: ${textChild.fontSize}px;
             font-family: ${textChild.fontFamily}, sans-serif;
@@ -243,6 +253,15 @@ const generateTextCodeSvelte = (obj) => {
         console.log("Processing button");
 
         const buttonTextObj = obj._objects?.find(child => child.type === "i-text");
+        const rect = obj._objects?.find(child => child.type === "rect");
+        const text = obj._objects?.find(child => child.type === "i-text");
+
+        const rx = rect?.rx || 0;
+        const stroke = rect?.stroke || "#000";
+        const strokeWidth = rect?.strokeWidth || 1;
+        const fill = rect?.fill || "#ADADAD";
+        const textColor = text?.fill || "#000";
+        const textValue = text?.text || "Click Me";
 
         if (!buttonTextObj) return "";
 
@@ -254,12 +273,12 @@ const generateTextCodeSvelte = (obj) => {
             left: ${obj.left}px;
             width: ${obj.width * obj.scaleX}px;
             height: ${obj.height * obj.scaleY}px;
-            background-color: ${obj._objects[0].fill};
-            color: ${buttonTextObj.fill};
+            background-color: ${fill};
+            color: ${textColor};
             font-size: ${buttonTextObj.fontSize}px;
             font-family: ${buttonTextObj.fontFamily || 'sans-serif'};
-            border: 2px solid ${obj._objects[0].stroke};
-            border-radius: 6px;
+            border: ${strokeWidth}px solid ${stroke};
+            border-radius: ${rx}px;
             cursor: pointer;
             transform: rotate(${obj.angle || 0}deg);
             transform-origin: top left;
@@ -270,8 +289,21 @@ const generateTextCodeSvelte = (obj) => {
         </button>
       `;
         case "combobox":
-          console.log("Processing dropdown");
-        
+          const rect3 = obj._objects?.find(o => o.type === "rect");
+          const text3 = obj._objects?.find(o => o.type === "i-text");
+
+          if (!rect3 || !text3) return "";
+
+          const rx3 = rect3.rx || 0;
+          const stroke3 = rect3.stroke || "#000";
+          const strokeWidth3 = rect3.strokeWidth || 1;
+          const fill3 = rect3.fill || "#fff";
+
+          const textValue3 = text3.text || "Seleccionar...";
+          const fontSize3 = text3.fontSize || 16;
+          const fontFamily3 = text3.fontFamily || "sans-serif";
+          const textColor3 = text3.fill || "#333";
+
           const comboTextObj = obj._objects?.find(child => child.type === "i-text");
         
           return `
@@ -282,18 +314,18 @@ const generateTextCodeSvelte = (obj) => {
               left: ${obj.left}px;
               width: ${obj.width * obj.scaleX}px;
               height: ${obj.height * obj.scaleY}px;
-              background-color: #fff;
-              color: ${comboTextObj.fill};
-              font-size: ${comboTextObj.fontSize}px;
-              font-family: ${comboTextObj.fontFamily};
-              border: 1px solid #000;
-              border-radius: 4px;
+              background-color: ${fill3};
+              color: ${textColor3};
+              font-size: ${fontSize3}px;
+              font-family: ${fontFamily3};
+              border: ${strokeWidth3}px solid ${stroke3};
+              border-radius: ${rx3}px;
               padding-left: 10px;
-              transform: rotate(${obj.angle || 0}deg) ;
+              transform: rotate(${obj.angle || 0}deg);
               transform-origin: top left;
             "
           >
-            <option>${comboTextObj.text}</option>
+            <option value = "" disabled >${comboTextObj.text}</option>
           </select>
         `;
         case "datepicker":
@@ -415,7 +447,7 @@ const generateTextCodeSvelte = (obj) => {
         top: "${obj.top}px",
         left: "${obj.left}px",
         fontSize: "${obj.fontSize}px",
-      //   fontWeight: ${obj.fontWeight},
+        fontWeight: ${obj.fontWeight},
         fontFamily: "${obj.fontFamily}, sans-serif",
       //   fontStyle: "${obj.fontStyle}",
         textDecoration: "${obj.underline ? "underline" : "none"}",
@@ -522,6 +554,22 @@ const generateTextCodeReact = (obj) => {
           const textChild = obj._objects?.find(child => child.type === "i-text");
 
           const textChildTop = textChild.top || 0;
+          const rect2 = obj._objects?.find(child => child.type === "rect");
+          const text2 = obj._objects?.find(child => child.type === "i-text");
+
+          console.log("rect2");
+
+          if (!rect2 || !text2) return "";
+
+          const rx2 = rect2.rx || 0;
+          const stroke2 = rect2.stroke || "#000";
+          const strokeWidth2 = rect2.strokeWidth || 1;
+          const fill2 = rect2.fill || "#fff";
+
+          const textValue2 = text2.text;
+          const fontSize2 = text2.fontSize || 16;
+          const fontFamily2 = text2.fontFamily || "sans-serif";
+          const textColor2 = text2.fill || "#333";
 
           if (!textChild) return "";
           // return `
@@ -554,11 +602,11 @@ const generateTextCodeReact = (obj) => {
                   position: "absolute",
                   top: "${obj.top }px",
                   left: "${obj.left }px",
-                  width: "${obj.width * obj.scaleX}px",
-                  height: "${obj.height * obj.scaleY}px",
-                  backgroundColor: "#fff",
-                  border: "1px solid #000",
-                  borderRadius: "4px",
+                  width: "${obj.width }px",
+                  height: "${obj.height}px",
+                   backgroundColor: "${fill2}",
+                   border: "${strokeWidth2}px solid ${stroke2}",
+                  borderRadius: "${rx2}px",
                   padding: "5px",
                   fontSize: "${textChild.fontSize}px",
                   fontFamily: "${textChild.fontFamily}, sans-serif",
@@ -602,6 +650,15 @@ const generateTextCodeReact = (obj) => {
           console.log("Processing button");
 
           const buttonTextObj = obj._objects?.find(child => child.type === "i-text");
+          const rect = obj._objects?.find(child => child.type === "rect");
+          const text = obj._objects?.find(child => child.type === "i-text");
+
+          const rx = rect?.rx || 0;
+          const stroke = rect?.stroke || "#000";
+          const strokeWidth = rect?.strokeWidth || 1;
+          const fill = rect?.fill || "#ADADAD";
+          const textColor = text?.fill || "#000";
+          const textValue = text?.text || "Click Me";
 
           if (!buttonTextObj) return "";
 
@@ -613,12 +670,15 @@ const generateTextCodeReact = (obj) => {
                 left: "${obj.left}px",
                 width: "${obj.width * obj.scaleX}px",
                 height: "${obj.height * obj.scaleY}px",
-                backgroundColor: "${obj._objects[0]?.fill || "#ADADAD"}",
-                color: "${buttonTextObj.fill}",
+                // backgroundColor: "${obj._objects[0]?.fill || "#ADADAD"}",
+                 backgroundColor: "${fill}",
+                  color: "${textColor}",
+                // color: "${buttonTextObj.fill}",
                 fontSize: "${buttonTextObj.fontSize}px",
                 fontFamily: "${buttonTextObj.fontFamily || "sans-serif"}",
-                border: "2px solid ${obj._objects[0]?.stroke || "#ffffff"}",
-                borderRadius: "6px",
+                // border: "2px solid ${obj._objects[0]?.stroke || "#ffffff"}",
+                border: "${strokeWidth}px solid ${stroke}",
+                borderRadius: "${rx}px",
                 cursor: "pointer",
                   // transform: "rotate(${obj.angle || 0}deg) scale(${obj.scaleX}, ${obj.scaleY})",
                   transform: "rotate(${obj.angle || 0}deg) ",
@@ -633,6 +693,26 @@ const generateTextCodeReact = (obj) => {
             console.log("Processing dropdown");
           
             const comboTextObj = obj._objects?.find(child => child.type === "i-text");
+
+            const rect3 = obj._objects?.find(o => o.type === "rect" );
+            // const rect3 = obj._objects?.find(o => o.type === "rect" && o.left === 0);
+            const text3 = obj._objects?.find(o => o.type === "i-text");
+
+            console.log(rect3);
+            console.log(text3);
+            
+
+            if (!rect3 || !text3) return "";
+
+            const rx3 = rect3.rx || 0;
+            const stroke3 = rect3.stroke || "#000";
+            const strokeWidth3 = rect3.strokeWidth || 1;
+            const fill3 = rect3.fill || "#fff";
+
+            const textValue3 = text3.text || "Seleccionar...";
+            const fontSize3 = text3.fontSize || 16;
+            const fontFamily3 = text3.fontFamily || "sans-serif";
+            const textColor3 = text3.fill || "#333";
           
             return `
               <select
@@ -642,19 +722,21 @@ const generateTextCodeReact = (obj) => {
                   left: "${obj.left}px",
                   width: "${obj.width * obj.scaleX}px",
                   height: "${obj.height * obj.scaleY}px",
-                  backgroundColor: "#fff",
-                  color: "${comboTextObj?.fill || '#333'}",
-                  fontSize: "${comboTextObj?.fontSize || 16}px",
-                  fontFamily: "${comboTextObj?.fontFamily || 'sans-serif'}",
-                  border: "1px solid #000",
-                  borderRadius: "4px",
+                   backgroundColor: "${fill3}",
+                  color: "${textColor3}",
+                  fontSize: "${fontSize3}px",
+                  fontFamily: "${fontFamily3}",
+                   border: "${strokeWidth3}px solid ${stroke3}",
+                  borderRadius: "${rx3}px",
                   paddingLeft: "10px",
                   // transform: "rotate(${obj.angle || 0}deg) scale(${obj.scaleX}, ${obj.scaleY})",
                   transform: "rotate(${obj.angle || 0}deg) ",
                   transformOrigin: "top left"
                 }}
               >
-                <option>${comboTextObj?.text || "Seleccionar..."}</option>
+                <option value="" disabled>
+                  ${comboTextObj?.text}
+                </option>
               </select>
             `;
           case "datepicker":
@@ -783,9 +865,9 @@ const generateTextCodeReact = (obj) => {
           top: "${obj.top}px",
           left: "${obj.left}px",
           fontSize: "${obj.fontSize}px",
-        //   fontWeight: ${obj.fontWeight},
-          fontFamily: "${obj.fontFamily}, sans-serif",
-        //   fontStyle: "${obj.fontStyle}",
+           fontWeight: "${obj.fontWeight}",
+          fontFamily: "${obj.fontFamily}",
+           fontStyle: "${obj.fontStyle}",
           textDecoration: "${obj.underline ? "underline" : "none"}",
           textAlign: "${obj.textAlign}",
           lineHeight: "${obj.lineHeight}",
@@ -798,7 +880,9 @@ const generateTextCodeReact = (obj) => {
           WebkitTextStroke: "${obj.strokeWidth}px ${obj.stroke}"
         }}
       >
-        ${obj.text}
+        ${obj.textLines.map((line, index) => 
+          index < obj.textLines.length - 1 ? line + '<br />' : line
+        ).join('')}
       </span>
     `;
   };

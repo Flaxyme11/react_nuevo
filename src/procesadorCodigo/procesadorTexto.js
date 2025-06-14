@@ -338,6 +338,8 @@ const generateTextCodeSvelte = (obj) => {
                 <input
                   type="date"
                   placeholder="${defaultDate}"
+                  min="${obj.minDate || ''}"
+                  max="${obj.maxDate || ''}"
                   style="
                     position: absolute;
                     top: ${obj.top}px;
@@ -753,12 +755,15 @@ const generateTextCodeReact = (obj) => {
                 type="date"
                 defaultValue=""
                 placeholder="${defaultDate}"
+                min="${obj.minDate || ''}"
+                max="${obj.maxDate || ''}"
                 style={{
                   position: "absolute",
                   top: "${obj.top}px",
                   left: "${obj.left}px",
                   width: "${obj.width * obj.scaleX}px",
                   height: "${obj.height * obj.scaleY}px",
+
                   backgroundColor: "#fff",
                   color: "#333",
                   fontSize: "${dateTextObj?.fontSize || 16}px",

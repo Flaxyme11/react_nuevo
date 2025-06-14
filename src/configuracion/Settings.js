@@ -26,6 +26,9 @@ function Settings ({canvas}){
     const [strokeColor, setStrokeColor] = useState("");
     const [fillColor, setFillColor] = useState("");
 
+    const [minDate, setMinDate] = useState("");
+    const [maxDate, setMaxDate] = useState("");
+
     useEffect (()=>{
         if(!canvas)return;
         canvas.on("selection:created",(event)=>{
@@ -134,7 +137,38 @@ function Settings ({canvas}){
 
             setSelectedObject(object);
         }
+        else if (object.type === "group" && object.id?.startsWith("datepicker-")) {
+            const dateText = object._objects.find(obj => obj.type === "i-text" && obj.text?.includes("/"));
+            setTextContent(dateText?.text || "");
+
+            // Extraemos fechas mínimas/máximas desde propiedades personalizadas
+            setMinDate(object.minDate || "");
+            setMaxDate(object.maxDate || "");
+            
+            setSelectedObject(object);
+        }
     }
+
+
+const handleMinDateChange = (e) => {
+    const value = e.target.value;
+    setMinDate(value);
+
+    if (selectedObject?.id?.startsWith("datepicker-")) {
+        selectedObject.minDate = value;
+        canvas.renderAll();
+    }
+};
+
+const handleMaxDateChange = (e) => {
+    const value = e.target.value;
+    setMaxDate(value);
+
+    if (selectedObject?.id?.startsWith("datepicker-")) {
+        selectedObject.maxDate = value;
+        canvas.renderAll();
+    }
+};
 
 const handleRxChange = (e) => {
     const value = parseInt(e.target.value, 10);
@@ -510,6 +544,24 @@ const handleButtonTextColorChange = (e) => {
         onRxChange={handleRxChange}
       />
     )}
+    {selectedObject && selectedObject.id?.startsWith("datepicker-") && (
+  <>
+    <Input 
+      label="Fecha mínima"
+      value={minDate}
+      fluid
+      type="date"
+      onChange={handleMinDateChange}
+    />
+    <Input 
+      label="Fecha máxima"
+      value={maxDate}
+      fluid
+      type="date"
+      onChange={handleMaxDateChange}
+    />
+  </>
+)}
   </div>
     );
 }

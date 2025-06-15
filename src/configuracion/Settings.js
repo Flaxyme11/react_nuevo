@@ -544,19 +544,15 @@ const handlePictureBorderWidthChange = (e) => {
         }
     };
 
-    const handleTextFontChange =(e)=>{
-        // console.log(e.target.value);
-        const value = e.label;
+const handleTextFontChange = (e) => {
+  const value = e.target.value;
+  setTextFont(value);
 
-        if (!e) return;
-        setTextFont(value);
-
-
-        if(selectedObject && selectedObject.type === "i-text" ){
-            selectedObject.set({fontFamily:value});
-            canvas.renderAll();
-        }
-    };
+  if (selectedObject && selectedObject.type === "i-text") {
+    selectedObject.set({ fontFamily: value });
+    canvas.renderAll();
+  }
+};
 
 
     const handleTextAlignChange =(e)=>{
@@ -640,12 +636,10 @@ const handleCheckboxBorderWidthChange = (e) => {
 };
 
 
-    const textOptions = [
-        { label: "Arial", value: "1"},
-        { label: "Open Sans", value: "2"},
-        // { label: "Bob Smith", value: "3" },
-    ];
-
+const textOptions = [
+  { label: "Arial", value: "Arial" },
+  { label: "Open Sans", value: "Open Sans" },
+];
 
 
     const RectSettings = ({ width, height, color, onWidthChange, onHeightChange, onColorChange }) => (
@@ -706,90 +700,71 @@ const handleCheckboxBorderWidthChange = (e) => {
 
     return (
        <div className="Settings darkmode" >
-    {selectedObject?.type === "rect" && (
-      <RectSettings
-        width={width}
-        height={height}
-        color={color}
-        onWidthChange={handleWidthChange}
-        onHeightChange={handleHeightChange}
-        onColorChange={handleColorChange}
-      />
-    )}
+        {selectedObject?.type === "rect" && (
+        <>
+            <Input label="Width" value={width} onChange={handleWidthChange} fluid />
+            <Input label="Height" value={height} onChange={handleHeightChange} fluid />
+            <Input label="Color" value={color} onChange={handleColorChange} type="color" fluid />
+        </>
+        )}
 
-    {selectedObject?.type === "circle" && (
-      <CircleSettings
-        diameter={diameter}
-        color={color}
-        onDiameterChange={handleDiamaterChange}
-        onColorChange={handleColorChange}
-      />
-    )}
+{selectedObject?.type === "circle" && (
+  <>
+    <Input label="Diameter" value={diameter} onChange={handleDiamaterChange} fluid />
+    <Input label="Color" value={color} onChange={handleColorChange} type="color" fluid />
+  </>
+)}
 
-    {selectedObject?.type === "i-text" && (
-      <TextSettings
-        textSize={textSize}
-        color={color}
-        textFont={textFont}
-        textAlign={textAlign}
-        isBold={isBold}
-        textUnderline={textUnderLine}
-        textItalic={textItalic}
-        onTextSizeChange={handleTextSizeChange}
-        onColorChange={handleColorChange}
-        onFontChange={handleTextFontChange}
-        onAlignChange={handleTextAlignChange}
-        onBoldChange={handleNegritaChange}
-        onUnderlineChange={handleSubrayadoChange}
-        onItalicChange={handleCursivaChange}
-        fontOptions={textOptions}
-      />
-    )}
+{selectedObject?.type === "i-text" && (
+  <>
+    <Input label="Tamaño de texto" value={textSize} onChange={handleTextSizeChange} fluid />
+    <Input label="Color" value={color} onChange={handleColorChange} type="color" fluid />
+<select value={textFont} onChange={handleTextFontChange} style={{ width: "100%", padding: "5px", marginBottom: "10px" }}>
+  <option value="" disabled>Seleccionar fuente</option>
+  <option value="Arial">Arial</option>
+  <option value="Open Sans">Open Sans</option>
+</select>
+    <select value={textAlign} onChange={handleTextAlignChange} style={{ width: "100%", padding: "5px" }}>
+      <option value="left">Izquierda</option>
+      <option value="center">Centro</option>
+      <option value="right">Derecha</option>
+    </select>
+    <div className="checkbox-group">
+      <Checkbox label="Subrayado" checked={textUnderLine} onChange={handleSubrayadoChange}>Subrayado</Checkbox>
+      <Checkbox label="Negrita" checked={isBold} onChange={handleNegritaChange}>Negrita</Checkbox>
+      <Checkbox label="Cursiva" checked={textItalic} onChange={handleCursivaChange}>Cursiva</Checkbox>
+    </div>
+  </>
+)}
+{selectedObject?.type === "group" && selectedObject.id?.startsWith("textbox-") && (
+  <>
+    <Input label="Texto" value={textContent} onChange={handleTextContentChange} fluid />
+    <Input label="Color texto" value={color} onChange={handleButtonTextColorChange} type="color" fluid />
+    <Input label="Color fondo" value={fillColor} onChange={handleFillColorChange} type="color" fluid />
+    <Input label="Color borde" value={strokeColor} onChange={handleStrokeColorChange} type="color" fluid />
+    <Input label="Radio borde" value={rx} onChange={handleRxChange} type="number" fluid min={0} max={20} step={1} />
+  </>
+)}
 
-    {selectedObject?.type === "group" && selectedObject.id?.startsWith("textbox-") && (
-      <TextboxSettings
-        textContent={textContent}
-        color={color}
-        fillColor={fillColor}
-        strokeColor={strokeColor}
-        rx={rx}
-        onTextChange={handleTextContentChange}
-        onTextColorChange={handleButtonTextColorChange}
-        onFillColorChange={handleFillColorChange}
-        onStrokeColorChange={handleStrokeColorChange}
-        onRxChange={handleRxChange}
-      />
-    )}
+{selectedObject?.id?.startsWith("button-") && (
+  <>
+    <Input label="Texto" value={textContent} onChange={handleButtonTextChange} fluid />
+    <Input label="Color texto" value={color} onChange={handleButtonTextColorChange} type="color" fluid />
+    <Input label="Color fondo" value={fillColor} onChange={handleFillColorChange} type="color" fluid />
+    <Input label="Color borde" value={strokeColor} onChange={handleStrokeColorChange} type="color" fluid />
+    <Input label="Radio borde" value={rx} onChange={handleRxChange} type="number" fluid min={0} max={20} step={1} />
+  </>
+)}
 
-    {selectedObject?.id?.startsWith("button-") && (
-      <ButtonSettings
-        textContent={textContent}
-        color={color}
-        fillColor={fillColor}
-        strokeColor={strokeColor}
-        rx={rx}
-        onTextChange={handleButtonTextChange}
-        onTextColorChange={handleButtonTextColorChange}
-        onFillColorChange={handleFillColorChange}
-        onStrokeColorChange={handleStrokeColorChange}
-        onRxChange={handleRxChange}
-      />
-    )}
-
-    {selectedObject?.id?.startsWith("combobox-") && (
-      <ComboBoxSettings
-        textContent={textContent}
-        color={color}
-        fillColor={fillColor}
-        strokeColor={strokeColor}
-        rx={rx}
-        onTextChange={handleButtonTextChange}
-        onTextColorChange={handleButtonTextColorChange}
-        onFillColorChange={handleFillColorChange}
-        onStrokeColorChange={handleStrokeColorChange}
-        onRxChange={handleRxChange}
-      />
-    )}
+{selectedObject?.id?.startsWith("combobox-") && (
+  <>
+    <Input label="Texto" value={textContent} onChange={handleButtonTextChange} fluid />
+    <Input label="Color texto" value={color} onChange={handleButtonTextColorChange} type="color" fluid />
+    <Input label="Color fondo" value={fillColor} onChange={handleFillColorChange} type="color" fluid />
+    <Input label="Color borde" value={strokeColor} onChange={handleStrokeColorChange} type="color" fluid />
+    <Input label="Radio borde" value={rx} onChange={handleRxChange} type="number" fluid min={0} max={20} step={1} />
+  </>
+)}
     {selectedObject && selectedObject.id?.startsWith("datepicker-") && (
   <>
     <Input 

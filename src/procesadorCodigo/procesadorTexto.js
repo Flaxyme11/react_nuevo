@@ -51,7 +51,7 @@ export default ${fileName};
       width: ${canvasWidth}px;
       height: ${canvasHeight}px;
       border: 1px solid black;
-      backgroundColor: white;"
+      background-color: white;"
   >
       ${canvas.getObjects()
           ?.map((obj) => generateTextCodeSvelte(obj))
@@ -361,6 +361,7 @@ const generateTextCodeSvelte = (obj) => {
               `;
         case "picturebox":
           console.log("Processing picturebox");
+          console.log(obj.isCircular);
         
           return  `
           <img
@@ -368,7 +369,7 @@ const generateTextCodeSvelte = (obj) => {
             alt="${obj.imageAlt || 'PictureBox'}"
             style="
               border: ${obj.pictureBorderWidth || 2}px solid ${obj.pictureBorderColor || ''};
-              border-radius: ${obj.isCircular ? '50%' : ''};
+              border-radius: ${obj.isCircular ? '50%' : '0'};
               position: absolute;
               top: ${obj.top}px;
               left: ${obj.left}px;
@@ -384,18 +385,23 @@ const generateTextCodeSvelte = (obj) => {
         case "checkbox":
           console.log("Processing checkbox");
         
-          const labelObj = obj._objects?.find(child => child.type === "i-text" && child.text !== "✔️");
-          const labelText = labelObj?.text || "Opción";
+          // const labelObj = obj._objects?.find(child => child.type === "i-text" && child.text !== "✔️");
+          // const labelText = labelObj?.text || "Opción";
         
+          
+          const labelS = obj._objects?.find(child => child.type === "i-text" && child.text !== "✔️");
+          const boxS = obj._objects?.find(child => child.type === "rect");
+
+          if (!labelS || !boxS) return "";
           return `
                 <label
                   style="
                     position: absolute;
                     top: ${obj.top}px;
                     left: ${obj.left}px;
-                    font-size: ${labelObj.fontSize}px;
-                    font-family: ${labelObj.fontFamily};
-                    color: ${labelObj.fill};
+                    font-size: ${labelS.fontSize}px;
+                    font-family: ${labelS.fontFamily};
+                    color: ${labelS.fill};
                     display: flex;
                     align-items: center;
                     gap: 10px;
@@ -404,8 +410,18 @@ const generateTextCodeSvelte = (obj) => {
                     transform-origin: top let;
                   "
                 >
-                  <input type="checkbox" style="width: 20px; height: 20px;" />
-                  ${labelText}
+                    <input
+                      type="checkbox"
+                      style="
+                        width: ${boxS.width}px;
+                        height: ${boxS.height}px;
+                        border: ${boxS.strokeWidth}px solid ${boxS.stroke};
+                        // appearance: none;
+                        background-color: white;
+                        cursor: pointer;
+                      "
+                    />
+                  ${labelS.text}
                 </label>
               `; 
         case "hyperlink":
@@ -775,9 +791,11 @@ const generateTextCodeReact = (obj) => {
           case "checkbox":
             console.log("Processing checkbox");
           
+
             const labelObj = obj._objects?.find(child => child.type === "i-text" && child.text !== "✔️");
-            const labelText = labelObj?.text || "Opción";
-          
+            const boxObj = obj._objects?.find(child => child.type === "rect");
+
+            if (!labelObj || !boxObj) return "";
             return `
               <label
                 style={{
@@ -796,8 +814,18 @@ const generateTextCodeReact = (obj) => {
                   transformOrigin: "top left"
                 }}
               >
-                <input type="checkbox" style={{ width: "20px", height: "20px" }} />
-                {labelText}
+                      <input
+                        type="checkbox"
+                        style={{
+                          width: "${boxObj.width}px",
+                          height: "${boxObj.height}px",
+                          border: "${boxObj.strokeWidth}px solid ${boxObj.stroke}",
+                          // appearance: "none",
+                          backgroundColor: "white",
+                          cursor: "pointer"
+                        }}
+                      />
+                ${labelObj.text}
               </label>
             `;   
           case "hyperlink":

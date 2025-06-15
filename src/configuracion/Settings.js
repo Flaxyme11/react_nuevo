@@ -1,6 +1,7 @@
-import { DropdownMenu, Input,IconButton,ComboBox,Checkbox} from "blocksin-system";
+import { DropdownMenu, Input,IconButton,ComboBox,Checkbox,_calcBounds} from "blocksin-system";
 import React,{useState,useEffect} from "react";
 import {CircleIcon, SquareIcon, SliderIcon} from "sebikostudio-icons";
+import { Canvas, Circle, Rect, Group, IText, Triangle, ActiveSelection } from "fabric";
 function Settings ({canvas}){
 
     const [selectedObject, setSelectedObject] = useState(null);
@@ -29,6 +30,35 @@ function Settings ({canvas}){
     const [minDate, setMinDate] = useState("");
     const [maxDate, setMaxDate] = useState("");
 
+    const [imageSrc, setImageSrc] = useState("");
+    const [imageAlt, setImageAlt] = useState("");
+    const [isCircular, setIsCircular] = useState(false);
+    const [pictureBorderColor, setPictureBorderColor] = useState("");
+    const [pictureBorderWidth, setPictureBorderWidth] = useState("");
+
+    const [checkboxLabel, setCheckboxLabel] = useState("");
+    const [checkboxFontSize, setCheckboxFontSize] = useState(16);
+    const [checkboxColor, setCheckboxColor] = useState("#000000");
+    const [checkboxBorderColor, setCheckboxBorderColor] = useState("#000000");
+    const [checkboxBorderWidth, setCheckboxBorderWidth] = useState(1);
+
+useEffect(() => {
+  const panel = document.querySelector(".Settings");
+  if (!panel || !canvas) return;
+
+  const stop = (e) => {
+    e.stopPropagation();
+  };
+
+  panel.addEventListener("mousedown", stop);
+  panel.addEventListener("pointerdown", stop);
+
+  return () => {
+    panel.removeEventListener("mousedown", stop);
+    panel.removeEventListener("pointerdown", stop);
+  };
+}, [canvas]);
+
     useEffect (()=>{
         if(!canvas)return;
         canvas.on("selection:created",(event)=>{
@@ -38,10 +68,10 @@ function Settings ({canvas}){
         canvas.on("selection:updated",(event)=>{
             handleObjectSelection(event.selected[0]);
         });
-        canvas.on("selection:updated",(event)=>{
-            setSelectedObject(null);
-            clearSettings();
-        });
+        // canvas.on("selection:updated",(event)=>{
+        //     setSelectedObject(null);
+        //     clearSettings();
+        // });
         canvas.on("selection:modified",(event)=>{
             handleObjectSelection(event.target);
         });
@@ -147,6 +177,29 @@ function Settings ({canvas}){
             
             setSelectedObject(object);
         }
+        // else if (object.type === "group" && object.id?.startsWith("picturebox-")) {
+        //     setImageSrc(object.imageSrc || "");
+        //     setImageAlt(object.imageAlt || "");
+        //     setIsCircular(object.isCircular || false);
+        //     setPictureBorderColor(object.pictureBorderColor || "");
+        //     setPictureBorderWidth(object.pictureBorderWidth || 0);
+
+        //     setSelectedObject(object);
+        // }
+        else if (object.type === "group" && object.id?.startsWith("checkbox-")) {
+            const label = object._objects.find(obj => obj.type === "i-text" && obj.text !== "✔️");
+            const box = object._objects.find(obj => obj.type === "rect");
+
+            if (label && box) {
+                setCheckboxLabel(label.text);
+                setCheckboxFontSize(label.fontSize);
+                setCheckboxColor(label.fill);
+                setCheckboxBorderColor(box.stroke);
+                setCheckboxBorderWidth(box.strokeWidth);
+            }
+
+            setSelectedObject(object);
+        }
     }
 
 
@@ -235,6 +288,132 @@ const handleButtonTextColorChange = (e) => {
         }
     }
 };
+const handleImageSrcChange = (e) => {
+    const value = e.target.value;
+    setImageSrc(value);
+
+    if (selectedObject?.id?.startsWith("picturebox-")) {
+        selectedObject.imageSrc = value;
+        canvas.renderAll();
+    }
+};
+
+const handleImageAltChange = (e) => {
+    const value = e.target.value;
+    setImageAlt(value);
+
+    if (selectedObject?.id?.startsWith("picturebox-")) {
+        selectedObject.imageAlt = value;
+        canvas.renderAll();
+    }
+};
+const handleCircularToggle = (checked) => {
+  setIsCircular(checked);
+
+  if (!selectedObject || !selectedObject.id?.startsWith("picturebox-")) return;
+
+  const oldGroup = selectedObject;
+  const objects = [...oldGroup._objects];
+  const oldFrame = objects[0];
+
+  const width = oldFrame.width || (oldFrame.radius * 2);
+  const height = oldFrame.height || (oldFrame.radius * 2);
+  const size = Math.min(width, height);
+
+  const commonProps = {
+    fill: oldFrame.fill,
+    stroke: oldFrame.stroke,
+    strokeWidth: oldFrame.strokeWidth,
+    originX: 'left',
+    originY: 'top',
+    left: 0,
+    top: 0,
+  };
+
+  let newFrame;
+  if (checked) {
+    newFrame = new Circle({
+      ...commonProps,
+      radius: size / 2,
+    });
+  } else {
+    newFrame = new Rect({
+      ...commonProps,
+      width: size,
+      height: size,
+      rx: 6,
+      ry: 6,
+    });
+  }
+
+  // Crear nuevo ícono siempre al centro
+  const icon = new IText('🖼️', {
+    fontSize: 36,
+    fill: '#aaa',
+    originX: 'center',
+    originY: 'center',
+    left: (newFrame.radius != null) ? newFrame.radius : newFrame.width / 2,
+    top: (newFrame.radius != null) ? newFrame.radius : newFrame.height / 2,
+    selectable: false,
+    evented: false,
+  });
+
+  // Crear nuevo grupo
+  const newGroup = new Group(
+    [newFrame, icon],
+    {
+      left: oldGroup.left,
+      top: oldGroup.top,
+      id: oldGroup.id,
+      selectable: true,
+      hasControls: true,
+      isCircular: checked,
+      imageSrc: oldGroup.imageSrc,
+      imageAlt: oldGroup.imageAlt,
+      pictureBorderColor: newFrame.stroke,
+      pictureBorderWidth: newFrame.strokeWidth,
+    }
+  );
+
+  // Reemplazar en canvas
+  canvas.remove(oldGroup);
+  canvas.add(newGroup);
+  canvas.setActiveObject(newGroup);
+  setSelectedObject(newGroup); // para que siga funcionando el panel de settings
+  canvas.requestRenderAll();
+};
+
+
+const handlePictureBorderColorChange = (e) => {
+  const value = e.target.value;
+  setPictureBorderColor(value);
+
+  if (selectedObject?.id?.startsWith("picturebox-")) {
+    selectedObject.pictureBorderColor = value;
+
+    const fondo = selectedObject._objects[0];
+    if (fondo) {
+      fondo.set({ stroke: value });
+      canvas.renderAll();
+    }
+  }
+};
+
+const handlePictureBorderWidthChange = (e) => {
+  const value = parseInt(e.target.value, 10);
+  setPictureBorderWidth(value);
+
+  if (selectedObject?.id?.startsWith("picturebox-")) {
+    selectedObject.pictureBorderWidth = value;
+
+    const fondo = selectedObject._objects[0];
+    if (fondo) {
+      fondo.set({ strokeWidth: value });
+      canvas.renderAll();
+    }
+  }
+};
+
 
     const clearSettings = ()=>{
         setWidth("");
@@ -394,11 +573,78 @@ const handleButtonTextColorChange = (e) => {
         }
     };
 
+
+const handleCheckboxLabelChange = (e) => {
+  const value = e.target.value;
+  setCheckboxLabel(value);
+
+  if (selectedObject?.id?.startsWith("checkbox-")) {
+    const label = selectedObject._objects.find(obj => obj.type === "i-text" && obj.text !== "✔️");
+    if (label) {
+      label.set({ text: value });
+      canvas.renderAll();
+    }
+  }
+};
+
+const handleCheckboxFontSizeChange = (e) => {
+  const value = parseInt(e.target.value, 10);
+  setCheckboxFontSize(value);
+
+  if (selectedObject?.id?.startsWith("checkbox-")) {
+    const label = selectedObject._objects.find(obj => obj.type === "i-text" && obj.text !== "✔️");
+    if (label) {
+      label.set({ fontSize: value });
+      canvas.renderAll();
+    }
+  }
+};
+
+const handleCheckboxColorChange = (e) => {
+  const value = e.target.value;
+  setCheckboxColor(value);
+
+  if (selectedObject?.id?.startsWith("checkbox-")) {
+    const label = selectedObject._objects.find(obj => obj.type === "i-text" && obj.text !== "✔️");
+    if (label) {
+      label.set({ fill: value });
+      canvas.renderAll();
+    }
+  }
+};
+
+const handleCheckboxBorderColorChange = (e) => {
+  const value = e.target.value;
+  setCheckboxBorderColor(value);
+
+  if (selectedObject?.id?.startsWith("checkbox-")) {
+    const box = selectedObject._objects.find(obj => obj.type === "rect");
+    if (box) {
+      box.set({ stroke: value });
+      canvas.renderAll();
+    }
+  }
+};
+
+const handleCheckboxBorderWidthChange = (e) => {
+  const value = parseInt(e.target.value, 10);
+  setCheckboxBorderWidth(value);
+
+  if (selectedObject?.id?.startsWith("checkbox-")) {
+    const box = selectedObject._objects.find(obj => obj.type === "rect");
+    if (box) {
+      box.set({ strokeWidth: value });
+      canvas.renderAll();
+    }
+  }
+};
+
+
     const textOptions = [
         { label: "Arial", value: "1"},
         { label: "Open Sans", value: "2"},
         // { label: "Bob Smith", value: "3" },
-      ];
+    ];
 
 
 
@@ -445,7 +691,7 @@ const handleButtonTextColorChange = (e) => {
     }) => (
     <>
         <Input label={placeholder} value={textContent} onChange={onTextChange} fluid />
-        <Input label="Color texto" value={color} onChange={onTextColorChange} type="color" fluid />
+        <Input label="Color texto" value={color} onChange={onTextColorChange} type="color" fluid  />
         <Input label="Color fondo" value={fillColor} onChange={onFillColorChange} type="color" fluid />
         <Input label="Color borde" value={strokeColor} onChange={onStrokeColorChange} type="color" fluid />
         <Input label="Radio borde" value={rx} onChange={onRxChange} type="number" fluid min={0} max={20} step={1} />
@@ -459,7 +705,7 @@ const handleButtonTextColorChange = (e) => {
 
 
     return (
-       <div className="Settings darkmode">
+       <div className="Settings darkmode" >
     {selectedObject?.type === "rect" && (
       <RectSettings
         width={width}
@@ -559,6 +805,91 @@ const handleButtonTextColorChange = (e) => {
       fluid
       type="date"
       onChange={handleMaxDateChange}
+    />
+  </>
+)}
+{selectedObject && selectedObject.id?.startsWith("picturebox-") && (
+  <>
+    <Input 
+      label="URL de imagen"
+      value={imageSrc}
+      fluid
+      onChange={handleImageSrcChange}
+      placeholder="https://..."
+    />
+    <Input 
+      label="Texto alternativo"
+      value={imageAlt}
+      fluid
+      onChange={handleImageAltChange}
+      placeholder="Descripción de la imagen"
+    />
+    <Input
+    label="Color de borde"
+    value={pictureBorderColor}
+    type="color"
+    fluid
+    onChange={handlePictureBorderColorChange}
+    />
+    <Input
+    label="Grosor de borde"
+    value={pictureBorderWidth}
+    type="number"
+    min={0}
+    max={10}
+    step={1}
+    fluid
+    onChange={handlePictureBorderWidthChange}
+    />
+    <Checkbox
+    label="Borde circular"
+    checked={isCircular}
+    onChange={handleCircularToggle}
+    >
+    Borde circular
+    </Checkbox>
+  </>
+)}
+
+{selectedObject?.id?.startsWith("checkbox-") && (
+  <>
+    <Input
+      label="Texto del checkbox"
+      value={checkboxLabel}
+      fluid
+      onChange={handleCheckboxLabelChange}
+    />
+    <Input
+      label="Tamaño del texto"
+      type="number"
+      min={8}
+      max={48}
+      value={checkboxFontSize}
+      fluid
+      onChange={handleCheckboxFontSizeChange}
+    />
+    <Input
+      label="Color del texto"
+      type="color"
+      value={checkboxColor}
+      fluid
+      onChange={handleCheckboxColorChange}
+    />
+    <Input
+      label="Color del borde"
+      type="color"
+      value={checkboxBorderColor}
+      fluid
+      onChange={handleCheckboxBorderColorChange}
+    />
+    <Input
+      label="Grosor del borde"
+      type="number"
+      min={0}
+      max={10}
+      value={checkboxBorderWidth}
+      fluid
+      onChange={handleCheckboxBorderWidthChange}
     />
   </>
 )}

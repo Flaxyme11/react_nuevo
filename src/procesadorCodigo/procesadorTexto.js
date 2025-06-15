@@ -364,17 +364,17 @@ const generateTextCodeSvelte = (obj) => {
         
           return  `
           <img
-            src=""
-            alt="PictureBox"
+            src="${obj.imageSrc || ''}"
+            alt="${obj.imageAlt || 'PictureBox'}"
             style="
+              border: ${obj.pictureBorderWidth || 2}px solid ${obj.pictureBorderColor || ''};
+              border-radius: ${obj.isCircular ? '50%' : ''};
               position: absolute;
               top: ${obj.top}px;
               left: ${obj.left}px;
               width: ${obj.width * obj.scaleX}px;
               height: ${obj.height * obj.scaleY}px;
-              background-color: #f8f8f8;
-              border: 2px solid #bbb;
-              border-radius: 6px;
+              background-color: transparent;
               object-fit: cover;
               transform: rotate(${obj.angle || 0}deg) ;
               transform-origin: top left;
@@ -619,35 +619,6 @@ const generateTextCodeReact = (obj) => {
                 }}
               />
           `;
-        // case "textbox":
-        //   console.log("Processing textbox");
-
-        //   // const textChild = obj._objects?.find(child => child.type === "i-text");
-
-        //   if (!textChild) return "";
-
-        //   return `
-        //     <div style={{
-        //       position: "absolute",
-        //       top: "${obj.top}px",
-        //       left: "${obj.left}px",
-        //       width: "${obj.width * obj.scaleX}px",
-        //       height: "${obj.height * obj.scaleY}px",
-        //       backgroundColor: "#fff",
-        //       border: "1px solid #000",
-        //       borderRadius: "4px",
-        //       padding: "5px",
-        //       fontSize: "${textChild.fontSize}px",
-        //       fontFamily: "${textChild.fontFamily}, sans-serif",
-        //       color: "${textChild.fill}",
-        //           // transform: "rotate(${obj.angle || 0}deg) scale(${obj.scaleX}, ${obj.scaleY})",
-        //           transform: "rotate(${obj.angle || 0}deg) ",
-        //       transformOrigin: "top left",
-        //       overflow: "hidden"
-        //     }}>
-        //       ${textChild.text}
-        //     </div>
-        //   `;
         case "button":
           console.log("Processing button");
 
@@ -783,17 +754,17 @@ const generateTextCodeReact = (obj) => {
           
             return `
               <img
-                src=""
-                alt="PictureBox"
+                src="${obj.imageSrc || ''}"
+                alt="${obj.imageAlt || 'PictureBox'}"
                 style={{
                   position: "absolute",
                   top: "${obj.top}px",
                   left: "${obj.left}px",
                   width: "${obj.width * obj.scaleX}px",
                   height: "${obj.height * obj.scaleY}px",
-                  backgroundColor: "#f8f8f8",
-                  border: "2px solid #bbb",
-                  borderRadius: "6px",
+                  backgroundColor: "transparent",
+                  border: "${obj.pictureBorderWidth || 2}px solid ${obj.pictureBorderColor || ''}",
+                  borderRadius: "${obj.isCircular ? '50%' : ''}",
                   objectFit: "cover",
                   // transform: "rotate(${obj.angle || 0}deg) scale(${obj.scaleX}, ${obj.scaleY})",
                   transform: "rotate(${obj.angle || 0}deg) ",

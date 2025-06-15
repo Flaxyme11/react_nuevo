@@ -389,8 +389,8 @@ function CanvasApp() {
         width,
         height,
         fill: '#f8f8f8',
-        stroke: '#bbb',
-        strokeWidth: 2,
+        stroke: '',
+        strokeWidth: 0,
         rx: 6,
         ry: 6,
         originX: 'left',
@@ -414,7 +414,11 @@ function CanvasApp() {
         top: posY,
         selectable: true,
         hasControls: true,
-        id: `picturebox-${uuidv4()}`
+        id: `picturebox-${uuidv4()}`,
+        imageSrc: "",
+        imageAlt: "",
+        pictureBorderColor: "#000",
+        pictureBorderWidth: 1,
       });
   
       // Evento para "subir" imagen (solo log por ahora)

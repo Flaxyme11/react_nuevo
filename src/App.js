@@ -118,7 +118,13 @@ function CanvasApp() {
         selectable: true,
         hasControls: true,
         id: `table-${uuidv4()}`,
+        
       });
+
+      tableGroup.numRows = rows;
+      tableGroup.numCols = cols;
+      tableGroup.cellWidth = cellWidth;
+      tableGroup.cellHeight = cellHeight;
       
       canvas.add(tableGroup);
       canvas.renderAll();
@@ -839,53 +845,53 @@ useEffect(() => {
   return   (
     <div className="App">
       <div className="Toolbar darkmode">
-      <IconButton onClick={addRectangle} variant= "ghost" size = "medium">
+      <IconButton  title="Agregar Rectangulo" onClick={addRectangle} variant= "ghost" size = "medium">
         <SquareIcon />
       </IconButton>
-      <IconButton onClick={addCircle} variant= "ghost" size = "medium">
+      <IconButton title="Agregar Circulo" onClick={addCircle} variant= "ghost" size = "medium">
         <CircleIcon />
       </IconButton>
-      <IconButton onClick={addTable} variant= "ghost" size = "medium">
+      <IconButton title="Agregar Tabla" onClick={addTable} variant= "ghost" size = "medium">
         <TableIcon />
       </IconButton>
-      <IconButton onClick={addTextBox} variant= "ghost" size = "medium">
+      <IconButton title="Agregar Cuadro de Texto" onClick={addTextBox} variant= "ghost" size = "medium">
         <Input2Icon />
       </IconButton>
-      <IconButton onClick={addButton} variant= "ghost" size = "medium">
+      <IconButton title="Agregar Botón" onClick={addButton} variant= "ghost" size = "medium">
         <ButtonIcon />
       </IconButton>
-      <IconButton onClick={addComboBox} variant= "ghost" size = "medium">
+      <IconButton title="Agregar ComboBox" onClick={addComboBox} variant= "ghost" size = "medium">
         <ChevronDownIcon />
       </IconButton>
-      <IconButton onClick={addDatePicker} variant= "ghost" size = "medium">
+      <IconButton title="Agregar DatePicker" onClick={addDatePicker} variant= "ghost" size = "medium">
         <CalendarIcon />
       </IconButton>
-      <IconButton onClick={addPictureBox} variant= "ghost" size = "medium">
+      <IconButton title="Agregar PictureBox" onClick={addPictureBox} variant= "ghost" size = "medium">
         <ImageIcon />
       </IconButton>
-      <IconButton onClick={addCheckbox} variant= "ghost" size = "medium">
+      <IconButton title="Agregar Checkbox" onClick={addCheckbox} variant= "ghost" size = "medium">
         <CheckboxIcon />
       </IconButton>
-      <IconButton onClick={addHyperlink} variant= "ghost" size = "medium">
+      <IconButton title="Agregar Hyperlink" onClick={addHyperlink} variant= "ghost" size = "medium">
         <Link2Icon />
       </IconButton>
 
 
 
-      <IconButton onClick={addText} variant= "ghost" size = "medium">
+      <IconButton title="Agregar texto" onClick={addText} variant= "ghost" size = "medium">
         <TextIcon />
       </IconButton>
 
-      <IconButton onClick={showlog} variant= "ghost" size = "medium">
+      {/* <IconButton onClick={showlog} variant= "ghost" size = "medium">
         <ActivityLogIcon />
-      </IconButton>
+      </IconButton> */}
       </div>
 
       <div className="ConfigBar darkmode">
-      <IconButton onClick={deleteSelectedObject} variant= "ghost" size = "medium">
+      <IconButton title="Eliminar objeto seleccionado" onClick={deleteSelectedObject} variant= "ghost" size = "medium">
         <Cross1Icon />
       </IconButton>
-      <IconButton onClick={clearCanvas} variant= "ghost" size = "medium">
+      <IconButton title="Limpiar lienzo" onClick={clearCanvas} variant= "ghost" size = "medium">
         <TrashIcon />
       </IconButton>
       </div>

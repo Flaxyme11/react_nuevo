@@ -105,32 +105,39 @@ const generateTextCodeSvelte = (obj) => {
     `;      
     case "table":
       console.log("Processing tabla");
-      return `
-              <table
-                style="
-                  position: absolute;
-                  top: ${obj.top}px;
-                  left: ${obj.left}px;
-                  width: ${obj.width * obj.scaleX}px;
-                  height: ${obj.height * obj.scaleY}px;
-                  border-collapse: collapse;
-                  border: 1px solid black;
-                  background-color: #f9f9f9;
-                  transform: rotate(${obj.angle || 0}deg);
-                  transform-origin: top left;
-                "
-              >
-                <tbody>
-                  ${[...Array(5)].map((_, rowIndex) => `
-                    <tr>
-                      ${[...Array(3)].map((_, colIndex) => `
-                        <td style="border: 1px solid black; padding: 5px;">R${rowIndex + 1}C${colIndex + 1}</td>
-                      `).join('')}
-                    </tr>
-                  `).join('')}
-                </tbody>
-              </table>
-            `;
+        const rowsS = obj.numRows || 5;
+        const colsS = obj.numCols || 3;
+        const cellWS = obj.cellWidth || 80;
+        const cellHS = obj.cellHeight || 25;
+
+        return `
+          <table
+            style="
+              position: absolute;
+              top: ${obj.top}px;
+              left: ${obj.left}px;
+              width: ${cellWS * colsS}px;
+              height: ${cellHS * rowsS}px;
+              border-collapse: collapse;
+              border: 1px solid black;
+              background-color: #f9f9f9;
+              transform: rotate(${obj.angle || 0}deg);
+              transform-origin: top left;
+            "
+          >
+            <tbody>
+              ${[...Array(rowsS)].map((_, rowIndex) => `
+                <tr>
+                  ${[...Array(colsS)].map((_, colIndex) => `
+                    <td style="border: 1px solid black; padding: 5px; width: ${cellWS}px; height: ${cellHS}px;">
+                      R${rowIndex + 1}C${colIndex + 1}
+                    </td>
+                  `).join("")}
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        `;
       break;
       case "rect":
           return  `
@@ -502,31 +509,41 @@ const generateTextCodeReact = (obj) => {
         console.log("Processing  text");
         break;
       case "table":
-        console.log("Processing tabla");
+        const rows = obj.numRows || 5;
+        const cols = obj.numCols || 3;
+        const cellW = obj.cellWidth || 80;
+        const cellH = obj.cellHeight || 25;
+
         return `
           <table
             style={{
               position: "absolute",
               top: "${obj.top}px",
               left: "${obj.left}px",
-              width: "${obj.width*obj.scaleX}px",
-              height: "${obj.height*obj.scaleY}px",
+              width: "${cellW * cols}px",
+              height: "${cellH * rows}px",
               borderCollapse: "collapse",
               border: "1px solid black",
               backgroundColor: "#f9f9f9",
-            //   transform: "scale(${obj.scaleX}, ${obj.scaleY})"
-             transform: "rotate(${obj.angle}deg)",
-            transformOrigin: "top left"
+              transform: "rotate(${obj.angle || 0}deg)",
+              transformOrigin: "top left"
             }}
           >
             <tbody>
-            ${[...Array(3)].map((_, rowIndex) => `
-              <tr>
-                ${[...Array(4)].map((_, colIndex) => `
-                  <td style={{ border: "1px solid black", padding: "10px" }}>R${rowIndex + 1}C${colIndex + 1}</td>
-                `).join('')}
-              </tr>
-            `).join('')}
+              ${[...Array(rows)].map((_, rowIndex) => `
+                <tr>
+                  ${[...Array(cols)].map((_, colIndex) => `
+                    <td style={{
+                      border: "1px solid black",
+                      padding: "5px",
+                      width: "${cellW}px",
+                      height: "${cellH}px"
+                    }}>
+                      R${rowIndex + 1}C${colIndex + 1}
+                    </td>
+                  `).join("")}
+                </tr>
+              `).join("")}
             </tbody>
           </table>
         `;

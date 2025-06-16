@@ -662,61 +662,88 @@ const textOptions = [
   { label: "Open Sans", value: "Open Sans" },
 ];
 
+const rebuildTableGroup = (group, numRows, numCols, cellWidth, cellHeight) => {
+  const newCells = [];
 
-    const RectSettings = ({ width, height, color, onWidthChange, onHeightChange, onColorChange }) => (
-    <>
-        <Input label="Width" value={width} onChange={onWidthChange} fluid />
-        <Input label="Height" value={height} onChange={onHeightChange} fluid />
-        <Input label="Color" value={color} onChange={onColorChange} type="color" fluid />
-    </>
-    );
-    const CircleSettings = ({ diameter, color, onDiameterChange, onColorChange }) => (
-        <>
-            <Input label="Diameter" value={diameter} onChange={onDiameterChange} fluid />
-            <Input label="Color" value={color} onChange={onColorChange} type="color" fluid />
-        </>
-    );
+  for (let row = 0; row < numRows; row++) {
+    for (let col = 0; col < numCols; col++) {
+      const rect = new Rect({
+        left: col * cellWidth,
+        top: row * cellHeight,
+        width: cellWidth,
+        height: cellHeight,
+        fill: row === 0 ? "#2C3E50" : row % 2 === 0 ? "#ECF0F1" : "#BDC3C7",
+        stroke: "#000",
+        strokeWidth: 1,
+      });
+      newCells.push(rect);
+    }
+  }
 
-    const TextSettings = ({
-    textSize, color, textFont, textAlign, isBold, textUnderline, textItalic,
-    onTextSizeChange, onColorChange, onFontChange, onAlignChange,
-    onBoldChange, onUnderlineChange, onItalicChange, fontOptions
-    }) => (
-    <>
-        <Input label="Size" value={textSize} onChange={onTextSizeChange} fluid />
-        <Input label="Color" value={color} onChange={onColorChange} type="color" fluid />
-        <ComboBox options={fontOptions} value={textFont} onChange={onFontChange} placeholder={textFont} isMulti={false} fluid />
-        <select value={textAlign} onChange={onAlignChange} style={{ width: "100%", padding: "5px" }}>
-            <option value="left">Left</option>
-            <option value="center">Center</option>
-            <option value="right">Right</option>
-        </select>
-        <div className="checkbox-group">
-        <Checkbox label="Underline" checked={textUnderline} onChange={onUnderlineChange}>Subrayado</Checkbox>
-        <Checkbox label="Bold" checked={isBold} onChange={onBoldChange}>Negrita</Checkbox>
-        <Checkbox label="Italic" checked={textItalic} onChange={onItalicChange}>Cursiva</Checkbox>
-        </div>
-    </>
-    );
+  const newGroup = new Group(newCells, {
+    left: group.left,
+    top: group.top,
+    selectable: true,
+    hasControls: true,
+    id: group.id,
+  });
 
-    const GroupSettings = ({
-        textContent, color, fillColor, strokeColor, rx,
-        onTextChange, onTextColorChange, onFillColorChange,
-        onStrokeColorChange, onRxChange, placeholder = "Texto"
-    }) => (
-    <>
-        <Input label={placeholder} value={textContent} onChange={onTextChange} fluid />
-        <Input label="Color texto" value={color} onChange={onTextColorChange} type="color" fluid  />
-        <Input label="Color fondo" value={fillColor} onChange={onFillColorChange} type="color" fluid />
-        <Input label="Color borde" value={strokeColor} onChange={onStrokeColorChange} type="color" fluid />
-        <Input label="Radio borde" value={rx} onChange={onRxChange} type="number" fluid min={0} max={20} step={1} />
-    </>
-    );
+  // Copy custom props
+  newGroup.numRows = numRows;
+  newGroup.numCols = numCols;
+  newGroup.cellWidth = cellWidth;
+  newGroup.cellHeight = cellHeight;
 
-        // alias
-    const TextboxSettings = GroupSettings;
-    const ButtonSettings = GroupSettings;
-    const ComboBoxSettings = GroupSettings;
+  return newGroup;
+};
+
+const handleAddRow = () => {
+  if (selectedObject?.id?.startsWith("table-")) {
+    const { numRows, numCols, cellWidth, cellHeight } = selectedObject;
+    const newGroup = rebuildTableGroup(selectedObject, numRows + 1, numCols, cellWidth, cellHeight);
+    canvas.remove(selectedObject);
+    canvas.add(newGroup);
+    canvas.setActiveObject(newGroup);
+    setSelectedObject(newGroup);
+    canvas.requestRenderAll();
+  }
+};
+
+const handleRemoveRow = () => {
+  if (selectedObject?.id?.startsWith("table-") && selectedObject.numRows > 1) {
+    const { numRows, numCols, cellWidth, cellHeight } = selectedObject;
+    const newGroup = rebuildTableGroup(selectedObject, numRows - 1, numCols, cellWidth, cellHeight);
+    canvas.remove(selectedObject);
+    canvas.add(newGroup);
+    canvas.setActiveObject(newGroup);
+    setSelectedObject(newGroup);
+    canvas.requestRenderAll();
+  }
+};
+
+const handleAddColumn = () => {
+  if (selectedObject?.id?.startsWith("table-")) {
+    const { numRows, numCols, cellWidth, cellHeight } = selectedObject;
+    const newGroup = rebuildTableGroup(selectedObject, numRows, numCols + 1, cellWidth, cellHeight);
+    canvas.remove(selectedObject);
+    canvas.add(newGroup);
+    canvas.setActiveObject(newGroup);
+    setSelectedObject(newGroup);
+    canvas.requestRenderAll();
+  }
+};
+
+const handleRemoveColumn = () => {
+  if (selectedObject?.id?.startsWith("table-") && selectedObject.numCols > 1) {
+    const { numRows, numCols, cellWidth, cellHeight } = selectedObject;
+    const newGroup = rebuildTableGroup(selectedObject, numRows, numCols - 1, cellWidth, cellHeight);
+    canvas.remove(selectedObject);
+    canvas.add(newGroup);
+    canvas.setActiveObject(newGroup);
+    setSelectedObject(newGroup);
+    canvas.requestRenderAll();
+  }
+};
 
 
     return (
@@ -917,6 +944,14 @@ const textOptions = [
       onChange={handleHyperlinkUrlChange}
       placeholder="https://..."
     />
+  </>
+)}
+{selectedObject?.id?.startsWith("table-") && (
+  <>
+    <button color="white" onClick={handleAddRow}>➕ Agregar fila</button>
+    <button onClick={handleRemoveRow}>➖ Quitar fila</button>
+    <button onClick={handleAddColumn}>➕ Agregar columna</button>
+    <button onClick={handleRemoveColumn}>➖ Quitar columna</button>
   </>
 )}
   </div>

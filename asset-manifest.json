@@ -1,0 +1,21 @@
+{
+  "files": {
+    "main.css": "/react_nuevo/static/css/main.47f3d0c7.css",
+    "main.js": "/react_nuevo/static/js/main.8d99654d.js",
+    "static/js/453.48973880.chunk.js": "/react_nuevo/static/js/453.48973880.chunk.js",
+    "static/media/BadgeImage-Right.svg": "/react_nuevo/static/media/BadgeImage-Right.451a06f7718907d8db8baaba85fb263a.svg",
+    "static/media/figmaLogo.svg": "/react_nuevo/static/media/figmaLogo.76a0523acffb2febb70ad63d80222117.svg",
+    "static/media/BadgeImage-Left.svg": "/react_nuevo/static/media/BadgeImage-Left.099267b125ab7d33fbcd3027fd38cdbf.svg",
+    "index.html": "/react_nuevo/index.html",
+    "static/media/AvatarDemo1.svg": "/react_nuevo/static/media/AvatarDemo1.89eb15e8b6bbbf292f36462e7d66c529.svg",
+    "static/media/AvatarDemo2.svg": "/react_nuevo/static/media/AvatarDemo2.25236517977431d1abac6b4736fcaa59.svg",
+    "static/media/AvatarDemo3.svg": "/react_nuevo/static/media/AvatarDemo3.133a92d18e1856a49fe01517275d4a70.svg",
+    "main.47f3d0c7.css.map": "/react_nuevo/static/css/main.47f3d0c7.css.map",
+    "main.8d99654d.js.map": "/react_nuevo/static/js/main.8d99654d.js.map",
+    "453.48973880.chunk.js.map": "/react_nuevo/static/js/453.48973880.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.47f3d0c7.css",
+    "static/js/main.8d99654d.js"
+  ]
+}

@@ -429,7 +429,7 @@ const generateTextCodeSvelte = (obj) => {
         
           return `
                 <a
-                  href="https://www.google.com"
+                  href="${obj.href || 'https://'}"
                   target="_blank"
                   rel="noopener noreferrer"
                   style="
@@ -439,10 +439,13 @@ const generateTextCodeSvelte = (obj) => {
                     font-size: ${obj.fontSize}px;
                     font-family: ${obj.fontFamily};
                     color: ${obj.fill};
-                    text-decoration: underline;
+                    text-decoration: ${obj.underline ? 'underline' : 'none'};
+                    font-weight: ${obj.fontWeight || 'normal'};  /* Negrita */
+                    font-style: ${obj.fontStyle || 'normal'};   /* Cursiva */
+                    text-align: ${obj.textAlign || 'left'}; 
                     line-height: ${obj.lineHeight};
                     opacity: ${obj.opacity};
-                    transform: rotate(${obj.angle || 0}deg) scale(${obj.scaleX}, ${obj.scaleY};
+                    transform: rotate(${obj.angle || 0}deg) scale(${obj.scaleX}, ${obj.scaleY});
                     transform-origin: top left;
                   "
                 >
@@ -833,7 +836,7 @@ const generateTextCodeReact = (obj) => {
           
             return `
               <a
-                href="local8080"
+                href="${obj.href || 'https://'}"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -841,7 +844,10 @@ const generateTextCodeReact = (obj) => {
                   top: "${obj.top}px",
                   left: "${obj.left}px",
                   fontSize: "${obj.fontSize}px",
-                  fontFamily: "${obj.fontFamily || 'sans-serif'}",
+                            fontFamily: "${obj.fontFamily}",
+                  fontStyle: "${obj.fontStyle}",
+                  textDecoration: "${obj.underline ? "underline" : "none"}",
+                  textAlign: "${obj.textAlign}",
                   color: "${obj.fill || '#000'}",
                   textDecoration: "underline",
                   lineHeight: "${obj.lineHeight || 1}",

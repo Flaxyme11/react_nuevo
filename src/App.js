@@ -700,7 +700,7 @@ function CanvasApp() {
   
   const addHyperlink = () => {
     if (canvas) {
-      const url = 'https://www.google.com/?hl=es';
+      const url = '';
       const label = 'Enlace';
       const posX = 100;
       const posY = 800;

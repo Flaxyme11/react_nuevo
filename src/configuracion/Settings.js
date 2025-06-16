@@ -42,6 +42,8 @@ function Settings ({canvas}){
     const [checkboxBorderColor, setCheckboxBorderColor] = useState("#000000");
     const [checkboxBorderWidth, setCheckboxBorderWidth] = useState(1);
 
+    const [hyperlinkUrl, setHyperlinkUrl] = useState("");
+
 useEffect(() => {
   const panel = document.querySelector(".Settings");
   if (!panel || !canvas) return;
@@ -199,8 +201,27 @@ useEffect(() => {
             }
 
             setSelectedObject(object);
+        }else if (object.type === "i-text" && object.id?.startsWith("hyperlink-")) {
+          
+          setHyperlinkUrl(object.href || "https://");
+          setTextSize(object.fontSize);
+          setColor(object.fill);
+          setTextFont(object.fontFamily);
+          setTextUnderline(object.underline);
+          setTextAlign(object.textAlign);
+          setSelectedObject(object);
         }
+
     }
+
+const handleHyperlinkUrlChange = (e) => {
+  const value = e.target.value;
+  setHyperlinkUrl(value);
+  if (selectedObject?.id?.startsWith("hyperlink-")) {
+    selectedObject.href = value;
+    canvas.renderAll();
+  }
+};
 
 
 const handleMinDateChange = (e) => {
@@ -715,7 +736,7 @@ const textOptions = [
   </>
 )}
 
-{selectedObject?.type === "i-text" && (
+{selectedObject?.type === "i-text" && selectedObject?.id?.startsWith("text-") && (
   <>
     <Input label="Tamaño de texto" value={textSize} onChange={handleTextSizeChange} fluid />
     <Input label="Color" value={color} onChange={handleColorChange} type="color" fluid />
@@ -735,6 +756,7 @@ const textOptions = [
       <Checkbox label="Cursiva" checked={textItalic} onChange={handleCursivaChange}>Cursiva</Checkbox>
     </div>
   </>
+  
 )}
 {selectedObject?.type === "group" && selectedObject.id?.startsWith("textbox-") && (
   <>
@@ -865,6 +887,35 @@ const textOptions = [
       value={checkboxBorderWidth}
       fluid
       onChange={handleCheckboxBorderWidthChange}
+    />
+  </>
+)}
+{selectedObject?.id?.startsWith("hyperlink-") && (
+  <>
+      <Input label="Tamaño de texto" value={textSize} onChange={handleTextSizeChange} fluid />
+    <Input label="Color" value={color} onChange={handleColorChange} type="color" fluid />
+<select value={textFont} onChange={handleTextFontChange} style={{ width: "100%", padding: "5px", marginBottom: "10px" }}>
+  <option value="" disabled>Seleccionar fuente</option>
+  <option value="Arial">Arial</option>
+  <option value="Open Sans">Open Sans</option>
+</select>
+    <select value={textAlign} onChange={handleTextAlignChange} style={{ width: "100%", padding: "5px" }}>
+      <option value="left">Izquierda</option>
+      <option value="center">Centro</option>
+      <option value="right">Derecha</option>
+    </select>
+    <div className="checkbox-group">
+      <Checkbox label="Subrayado" checked={textUnderLine} onChange={handleSubrayadoChange}>Subrayado</Checkbox>
+      <Checkbox label="Negrita" checked={isBold} onChange={handleNegritaChange}>Negrita</Checkbox>
+      <Checkbox label="Cursiva" checked={textItalic} onChange={handleCursivaChange}>Cursiva</Checkbox>
+    </div>
+  
+    <Input
+      label="URL"
+      value={hyperlinkUrl}
+      fluid
+      onChange={handleHyperlinkUrlChange}
+      placeholder="https://..."
     />
   </>
 )}

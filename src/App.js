@@ -771,69 +771,68 @@ const clearCanvas = () => {
 };
 
 useEffect(() => {
-  const handleKeyDown = async (e) => {
-    if (!canvas) return;
+const handleKeyDown = async (e) => {
+  if (!canvas) return;
 
+  const tagName = document.activeElement.tagName.toLowerCase();
+  const isInputActive = tagName === "input" || tagName === "textarea" || document.activeElement.isContentEditable;
+  if (isInputActive) return; // Evita interferencia si se está escribiendo en un campo
 
-    if (e.key === "Delete") {
-      deleteSelectedObject();
-    }
-    if (e.ctrlKey && e.key === 'c') {
-      const activeObject = canvas.getActiveObject();
-      if (activeObject) {
-        const copied = [];
-    
-        if (activeObject.type === 'activeSelection') {
-          for (const obj of activeObject.getObjects()) {
-            const clone = await obj.clone();
-            // Guarda también el ID original como referencia
-            clone._originalId = obj.id || null;
-            copied.push(clone);
-          }
-        } else {
-          const clone = await activeObject.clone();
-          clone._originalId = activeObject.id || null;
+  if (e.key === "Delete") {
+    deleteSelectedObject();
+  }
+
+  if (e.ctrlKey && e.key === 'c') {
+    const activeObject = canvas.getActiveObject();
+    if (activeObject) {
+      const copied = [];
+
+      if (activeObject.type === 'activeSelection') {
+        for (const obj of activeObject.getObjects()) {
+          const clone = await obj.clone();
+          clone._originalId = obj.id || null;
           copied.push(clone);
         }
-    
-        copiedObjectsRef.current = copied;
+      } else {
+        const clone = await activeObject.clone();
+        clone._originalId = activeObject.id || null;
+        copied.push(clone);
       }
-    }
-    // Pegar (Ctrl + V)
-    if (e.ctrlKey && e.key === 'v') {
-      if (copiedObjectsRef.current.length > 0) {
-        const pasted = [];
-    
-        for (const obj of copiedObjectsRef.current) {
-          const clone = await obj.clone();
-    
-          // Extraer el ID original guardado (si existe)
-          const originalId = obj._originalId || obj.id || `object-${uuidv4()}`;
-          const prefix = originalId.split('-')[0] || 'object';
-    
-          clone.set({
-            left: (obj.left || 0) + 20,
-            top: (obj.top || 0) + 20,
-            id: `${prefix}-${uuidv4()}`,
-          });
-    
-          canvas.add(clone);
-          pasted.push(clone);
-        }
-    
-        // Seleccionar lo que se pegó
-        if (pasted.length > 1) {
-          const selection = new ActiveSelection(pasted, { canvas });
-          canvas.setActiveObject(selection);
-        } else {
-          canvas.setActiveObject(pasted[0]);
-        }
-    
-        canvas.requestRenderAll();
-      }
-    }
-  };
 
+      copiedObjectsRef.current = copied;
+    }
+  }
+
+  if (e.ctrlKey && e.key === 'v') {
+    if (copiedObjectsRef.current.length > 0) {
+      const pasted = [];
+
+      for (const obj of copiedObjectsRef.current) {
+        const clone = await obj.clone();
+        const originalId = obj._originalId || obj.id || `object-${uuidv4()}`;
+        const prefix = originalId.split('-')[0] || 'object';
+
+        clone.set({
+          left: (obj.left || 0) + 20,
+          top: (obj.top || 0) + 20,
+          id: `${prefix}-${uuidv4()}`,
+        });
+
+        canvas.add(clone);
+        pasted.push(clone);
+      }
+
+      if (pasted.length > 1) {
+        const selection = new ActiveSelection(pasted, { canvas });
+        canvas.setActiveObject(selection);
+      } else {
+        canvas.setActiveObject(pasted[0]);
+      }
+
+      canvas.requestRenderAll();
+    }
+  }
+};
 
   window.addEventListener("keydown", handleKeyDown);
 

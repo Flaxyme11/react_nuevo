@@ -899,7 +899,7 @@ const handleRemoveColumn = () => {
       fluid
       onChange={handleCheckboxColorChange}
     />
-    <Input
+    {/* <Input
       label="Color del borde"
       type="color"
       value={checkboxBorderColor}
@@ -914,7 +914,7 @@ const handleRemoveColumn = () => {
       value={checkboxBorderWidth}
       fluid
       onChange={handleCheckboxBorderWidthChange}
-    />
+    /> */}
   </>
 )}
 {selectedObject?.id?.startsWith("hyperlink-") && (

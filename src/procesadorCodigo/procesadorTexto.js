@@ -11,7 +11,7 @@ const procesadorTexto = (canvas,fileType,fileName) => {
         // const canvasWidth = canvas.width;
         // const canvasHeight = canvas.height;
       return `
-import './${fileName}.css';
+      import React from 'react'
 
 function ${fileName}() {
   return (
@@ -194,8 +194,8 @@ const generateTextCodeSvelte = (obj) => {
             position: absolute;
             top: ${obj.top}px;
             left: ${obj.left}px;
-            width: ${obj.width}px;
-            height: ${obj.height}px;
+            width:  ${obj.width * obj.scaleX}px;
+            height: ${obj.height * obj.scaleY}px;
             background-color: ${fill2};
             border: ${strokeWidth2}px solid ${stroke2};
             border-radius: ${rx2}px;
@@ -204,8 +204,8 @@ const generateTextCodeSvelte = (obj) => {
             font-family: ${textChild.fontFamily}, sans-serif;
             color: ${textChild.fill};
             line-height: ${textChild.lineHeight || 1.2};
-            transform: rotate(${obj.angle || 0}deg) scale(${obj.scaleX}, ${obj.scaleY});
-            transform-origin: center center;
+            transform: rotate(${obj.angle || 0}deg) ;
+            transform-origin: top left;
           "
         />`
 
@@ -640,8 +640,8 @@ const generateTextCodeReact = (obj) => {
                   position: "absolute",
                   top: "${obj.top }px",
                   left: "${obj.left }px",
-                  width: "${obj.width }px",
-                  height: "${obj.height}px",
+                  width: "${obj.width * obj.scaleX }px",
+                  height: "${obj.height * obj.scaleY }px",
                    backgroundColor: "${fill2}",
                    border: "${strokeWidth2}px solid ${stroke2}",
                   borderRadius: "${rx2}px",
@@ -650,7 +650,7 @@ const generateTextCodeReact = (obj) => {
                   fontFamily: "${textChild.fontFamily}, sans-serif",
                   color: "${textChild.fill}",
                   lineHeight: ${textChild.lineHeight || 1.2} ,
-                  transform: "rotate(${obj.angle || 0}deg) scale(${obj.scaleX}, ${obj.scaleY}",
+                  transform: "rotate(${obj.angle || 0}deg) ",
                   transformOrigin: "top left"
                 }}
               />
